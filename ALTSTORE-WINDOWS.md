@@ -34,13 +34,13 @@
    - `altstore.json`
    - `AppIcon-1024.png`
 
-安装源地址固定为：
+当前安装源地址为：
 
 ```text
-https://github.com/你的GitHub用户名/你的仓库名/releases/latest/download/altstore.json
+https://github.com/R-ErBai/EyeCare2020/releases/latest/download/altstore.json
 ```
 
-请把“你的GitHub用户名”和“你的仓库名”替换成实际值。
+该地址会在每次重新构建后始终指向最新版本。
 
 ## 第三步：在 Windows 安装 AltServer
 
