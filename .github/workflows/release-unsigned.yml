@@ -1,0 +1,79 @@
+name: Build unsigned AltStore IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: altstore-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Verify project resources
+        run: node scripts/verify-project.mjs
+
+      - name: Test timer state machine
+        run: swift test
+
+      - name: Build unsigned iPhone app
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild build \
+            -project EyeCare2020.xcodeproj \
+            -scheme EyeCare2020 \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "${RUNNER_TEMP}/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Package unsigned IPA and AltStore source
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="${RUNNER_TEMP}/DerivedData/Build/Products/Release-iphoneos/EyeCare2020.app"
+          test -d "${APP_PATH}"
+
+          mkdir -p dist Payload
+          cp -R "${APP_PATH}" Payload/EyeCare2020.app
+          ditto -c -k --sequesterRsrc --keepParent Payload dist/EyeCare2020.ipa
+          cp EyeCare2020/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png dist/AppIcon-1024.png
+
+          GITHUB_REPOSITORY="${GITHUB_REPOSITORY}" \
+          IPA_PATH=dist/EyeCare2020.ipa \
+          BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+          node scripts/generate-altstore-source.mjs dist/altstore.json
+
+          test -s dist/EyeCare2020.ipa
+          test -s dist/altstore.json
+          shasum -a 256 dist/EyeCare2020.ipa dist/altstore.json
+
+      - name: Publish latest AltStore release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: altstore-${{ github.run_id }}
+          name: 远眺 AltStore Build ${{ github.run_number }}
+          body: |
+            在 AltStore 中添加以下源地址：
+
+            https://github.com/${{ github.repository }}/releases/latest/download/altstore.json
+
+            免费 Apple ID 签名有效期为 7 天，AltStore 会在后台自动续签。
+          make_latest: true
+          files: |
+            dist/EyeCare2020.ipa
+            dist/altstore.json
+            dist/AppIcon-1024.png

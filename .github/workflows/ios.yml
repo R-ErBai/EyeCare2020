@@ -1,0 +1,35 @@
+name: iOS verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-15
+
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Verify resources
+        run: node scripts/verify-project.mjs
+
+      - name: Test core state machine
+        run: swift test
+
+      - name: Build and test app
+        shell: bash
+        run: |
+          set -euo pipefail
+          SIMULATOR_ID="$(
+            xcrun simctl list devices available |
+              awk -F '[()]' '/iPhone/ {print $2; exit}'
+          )"
+          test -n "${SIMULATOR_ID}"
+          xcodebuild test \
+            -project EyeCare2020.xcodeproj \
+            -scheme EyeCare2020 \
+            -destination "platform=iOS Simulator,id=${SIMULATOR_ID}" \
+            CODE_SIGNING_ALLOWED=NO

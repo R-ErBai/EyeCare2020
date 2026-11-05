@@ -1,0 +1,547 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B10000000000000000000001 /* EyeCare2020App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* EyeCare2020App.swift */; };
+		B10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* ContentView.swift */; };
+		B10000000000000000000003 /* TimerCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* TimerCore.swift */; };
+		B10000000000000000000004 /* LockObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* LockObserver.swift */; };
+		B10000000000000000000005 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000005 /* NotificationScheduler.swift */; };
+		B10000000000000000000006 /* BackgroundAudioKeeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* BackgroundAudioKeeper.swift */; };
+		B10000000000000000000007 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* TimerViewModel.swift */; };
+		B10000000000000000000008 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* AppTheme.swift */; };
+		B10000000000000000000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000009 /* Assets.xcassets */; };
+		B1000000000000000000000A /* silence.wav in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000A /* silence.wav */; };
+		B1000000000000000000000B /* TimerCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000C /* TimerCoreTests.swift */; };
+		B1000000000000000000000C /* NotificationSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000F /* NotificationSchedule.swift */; };
+		B1000000000000000000000D /* NotificationScheduleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000010 /* NotificationScheduleTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6CA86AB2F69FCD54A92ECFE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A20000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDD23D02C15962B0CBFEB61B;
+			remoteInfo = EyeCare2020;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F10000000000000000000001 /* EyeCare2020App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeCare2020App.swift; sourceTree = "<group>"; };
+		F10000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F10000000000000000000003 /* TimerCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCore.swift; sourceTree = "<group>"; };
+		F10000000000000000000004 /* LockObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockObserver.swift; sourceTree = "<group>"; };
+		F10000000000000000000005 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		F10000000000000000000006 /* BackgroundAudioKeeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAudioKeeper.swift; sourceTree = "<group>"; };
+		F10000000000000000000007 /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerViewModel.swift; sourceTree = "<group>"; };
+		F10000000000000000000008 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		F10000000000000000000009 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F1000000000000000000000A /* silence.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = silence.wav; sourceTree = "<group>"; };
+		F1000000000000000000000B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F1000000000000000000000C /* TimerCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerCoreTests.swift; sourceTree = "<group>"; };
+		F1000000000000000000000D /* EyeCare2020.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EyeCare2020.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1000000000000000000000E /* EyeCare2020Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyeCare2020Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1000000000000000000000F /* NotificationSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedule.swift; sourceTree = "<group>"; };
+		F10000000000000000000010 /* NotificationScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduleTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A696F878BC84E70C8B394900 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		182EB6A7E11160BA07CCE744 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		094A1B67CB64329ED83A23A3 = {
+			isa = PBXGroup;
+			children = (
+				3B3269B1AC686CB4697FD849 /* EyeCare2020 */,
+				659B929EA9C69D84D00CFA5C /* EyeCare2020Tests */,
+				34453FBE6B01D70555BB7F08 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		34453FBE6B01D70555BB7F08 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F1000000000000000000000D /* EyeCare2020.app */,
+				F1000000000000000000000E /* EyeCare2020Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3B3269B1AC686CB4697FD849 /* EyeCare2020 */ = {
+			isa = PBXGroup;
+			children = (
+				F10000000000000000000001 /* EyeCare2020App.swift */,
+				F10000000000000000000002 /* ContentView.swift */,
+				41F65F646B3B59AD04A62216 /* Timer */,
+				C912BCBC8B13AD4A1D7A5893 /* Models */,
+				C8039846921FA90AF4FC29E6 /* Services */,
+				283ACE5C8950FE9A3C7EC3FC /* ViewModels */,
+				622B65A3044AEA81A0040E9C /* Theme */,
+				208716B8B94F73657659D955 /* Resources */,
+				F10000000000000000000009 /* Assets.xcassets */,
+				F1000000000000000000000B /* Info.plist */,
+			);
+			path = EyeCare2020;
+			sourceTree = "<group>";
+		};
+		41F65F646B3B59AD04A62216 /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				F10000000000000000000003 /* TimerCore.swift */,
+			);
+			path = Timer;
+			sourceTree = "<group>";
+		};
+		C912BCBC8B13AD4A1D7A5893 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F1000000000000000000000F /* NotificationSchedule.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C8039846921FA90AF4FC29E6 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F10000000000000000000004 /* LockObserver.swift */,
+				F10000000000000000000005 /* NotificationScheduler.swift */,
+				F10000000000000000000006 /* BackgroundAudioKeeper.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		283ACE5C8950FE9A3C7EC3FC /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F10000000000000000000007 /* TimerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		622B65A3044AEA81A0040E9C /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				F10000000000000000000008 /* AppTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		659B929EA9C69D84D00CFA5C /* EyeCare2020Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F1000000000000000000000C /* TimerCoreTests.swift */,
+				F10000000000000000000010 /* NotificationScheduleTests.swift */,
+			);
+			path = EyeCare2020Tests;
+			sourceTree = "<group>";
+		};
+		208716B8B94F73657659D955 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F1000000000000000000000A /* silence.wav */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CDD23D02C15962B0CBFEB61B /* EyeCare2020 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5BFD6ECFB61E4121DE54B1D4 /* Build configuration list for PBXNativeTarget "EyeCare2020" */;
+			buildPhases = (
+				DC6E4C2C64F0586898FA066A /* Sources */,
+				676BCBEFF7AA6BB8F32D9503 /* Resources */,
+				A696F878BC84E70C8B394900 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EyeCare2020;
+			productName = EyeCare2020;
+			productReference = F1000000000000000000000D /* EyeCare2020.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6C38870380CCF135EB787B9F /* EyeCare2020Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2699B1369D54C87647BC0113 /* Build configuration list for PBXNativeTarget "EyeCare2020Tests" */;
+			buildPhases = (
+				9ADE9D0BB01247F39BEFC0D0 /* Sources */,
+				52B31400BD60860690C2DB14 /* Resources */,
+				182EB6A7E11160BA07CCE744 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D10000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = EyeCare2020Tests;
+			productName = EyeCare2020Tests;
+			productReference = F1000000000000000000000E /* EyeCare2020Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A20000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					CDD23D02C15962B0CBFEB61B = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					6C38870380CCF135EB787B9F = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = CDD23D02C15962B0CBFEB61B;
+					};
+				};
+			};
+			buildConfigurationList = C1595E938E8D4AF0BD59BD6C /* Build configuration list for PBXProject "EyeCare2020" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 094A1B67CB64329ED83A23A3;
+			productRefGroup = 34453FBE6B01D70555BB7F08 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CDD23D02C15962B0CBFEB61B /* EyeCare2020 */,
+				6C38870380CCF135EB787B9F /* EyeCare2020Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		676BCBEFF7AA6BB8F32D9503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000009 /* Assets.xcassets in Resources */,
+				B1000000000000000000000A /* silence.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52B31400BD60860690C2DB14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DC6E4C2C64F0586898FA066A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* EyeCare2020App.swift in Sources */,
+				B10000000000000000000002 /* ContentView.swift in Sources */,
+				B10000000000000000000003 /* TimerCore.swift in Sources */,
+				B10000000000000000000004 /* LockObserver.swift in Sources */,
+				B10000000000000000000005 /* NotificationScheduler.swift in Sources */,
+				B10000000000000000000006 /* BackgroundAudioKeeper.swift in Sources */,
+				B10000000000000000000007 /* TimerViewModel.swift in Sources */,
+				B10000000000000000000008 /* AppTheme.swift in Sources */,
+				B1000000000000000000000C /* NotificationSchedule.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9ADE9D0BB01247F39BEFC0D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000000B /* TimerCoreTests.swift in Sources */,
+				B1000000000000000000000D /* NotificationScheduleTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D10000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDD23D02C15962B0CBFEB61B /* EyeCare2020 */;
+			targetProxy = 6CA86AB2F69FCD54A92ECFE7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EyeCare2020/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EyeCare2020/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C10000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/Frameworks",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EyeCare2020.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EyeCare2020";
+			};
+			name = Debug;
+		};
+		C10000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/Frameworks",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EyeCare2020.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EyeCare2020";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C1595E938E8D4AF0BD59BD6C /* Build configuration list for PBXProject "EyeCare2020" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C10000000000000000000001 /* Debug */,
+				C10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5BFD6ECFB61E4121DE54B1D4 /* Build configuration list for PBXNativeTarget "EyeCare2020" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C10000000000000000000003 /* Debug */,
+				C10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2699B1369D54C87647BC0113 /* Build configuration list for PBXNativeTarget "EyeCare2020Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C10000000000000000000005 /* Debug */,
+				C10000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A20000000000000000000001 /* Project object */;
+}
