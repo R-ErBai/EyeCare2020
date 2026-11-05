@@ -1,0 +1,15 @@
+name: Runner smoke test
+
+on:
+  push:
+    paths:
+      - ".github/workflows/runner-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Report runner
+        run: echo "Ubuntu runner is available"
