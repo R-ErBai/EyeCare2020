@@ -15,6 +15,12 @@
 
 免费 Apple ID 签名仍然只有 7 天有效期，但 AltStore 会自动续签，不需要每周手动重装。自动续签时，Windows 电脑需要开机并与 iPhone 处于同一 Wi-Fi。
 
+当前安装源：
+
+```text
+https://github.com/R-ErBai/EyeCare2020/releases/latest/download/altstore.json
+```
+
 ## 重要说明
 
 这个版本为了准确处理锁屏，使用静音音频维持后台运行。因此：
