@@ -1,19 +1,27 @@
 import Combine
 import Foundation
 import UIKit
+import UserNotifications
 
 @MainActor
 final class TimerViewModel: ObservableObject {
     @Published private(set) var phase: TimerCore.Phase = .work
     @Published private(set) var status: TimerCore.Status = .idle
-    @Published private(set) var remaining: TimeInterval = TimerCore.workDuration
+    @Published private(set) var remaining = TimeInterval(TimerCore.defaultWorkMinutes * 60)
     @Published private(set) var progress: Double = 0
     @Published private(set) var completedWorkCycles = 0
     @Published private(set) var notice: String?
+    @Published private(set) var restChoiceSecondsRemaining = 0
+    @Published private(set) var notificationPermissionDenied = false
+    @Published private(set) var workMinutes: Int
 
-    private var core = TimerCore()
+    private var core: TimerCore
     private var ticker: AnyCancellable?
     private var permissionRequested = false
+    private let userDefaults: UserDefaults
+    private static let notificationDeniedMessage =
+        "通知权限未开启。前台仍会弹选择框，后台到点可能没有提醒。"
+    private static let workMinutesDefaultsKey = "workDurationMinutes"
 
     private let dateProvider: () -> Date
     private let notificationScheduler: NotificationScheduler
@@ -25,12 +33,27 @@ final class TimerViewModel: ObservableObject {
         dateProvider: @escaping () -> Date = Date.init,
         notificationScheduler: NotificationScheduler = NotificationScheduler(),
         backgroundAudioKeeper: BackgroundAudioKeeper = BackgroundAudioKeeper(),
-        lockObserver: LockObserver = LockObserver()
+        lockObserver: LockObserver = LockObserver(),
+        userDefaults: UserDefaults = .standard
     ) {
+        let storedMinutes = userDefaults.object(
+            forKey: Self.workMinutesDefaultsKey
+        ) as? Int
+        let initialMinutes = min(
+            max(
+                storedMinutes ?? TimerCore.defaultWorkMinutes,
+                TimerCore.minimumWorkMinutes
+            ),
+            TimerCore.maximumWorkMinutes
+        )
+
         self.dateProvider = dateProvider
         self.notificationScheduler = notificationScheduler
         self.backgroundAudioKeeper = backgroundAudioKeeper
         self.lockObserver = lockObserver
+        self.userDefaults = userDefaults
+        self.workMinutes = initialMinutes
+        self.core = TimerCore(workMinutes: initialMinutes)
 
         lockObserver.onLock = { [weak self] in
             Task { @MainActor in
@@ -49,10 +72,15 @@ final class TimerViewModel: ObservableObject {
         }
 
         sync(at: dateProvider())
+        refreshNotificationAuthorization()
     }
 
     var isRunning: Bool {
         status != .idle
+    }
+
+    var isAwaitingRestChoice: Bool {
+        status == .awaitingRestChoice
     }
 
     var timeText: String {
@@ -64,6 +92,8 @@ final class TimerViewModel: ObservableObject {
         switch status {
         case .idle:
             return "准备开始"
+        case .awaitingRestChoice:
+            return "该休息了"
         case .locked:
             return "屏幕已锁定"
         case .running:
@@ -74,7 +104,9 @@ final class TimerViewModel: ObservableObject {
     var phaseSubtitle: String {
         switch status {
         case .idle:
-            return "每 20 分钟，让眼睛休息 20 秒"
+            return "每 \(workMinutes) 分钟，让眼睛休息 20 秒或 1 分钟"
+        case .awaitingRestChoice:
+            return "选择休息 20 秒，或延长到 1 分钟"
         case .locked:
             return "计时已暂停，解锁后会自动处理"
         case .running:
@@ -122,17 +154,91 @@ final class TimerViewModel: ObservableObject {
         sync(at: now)
     }
 
+    func setWorkDuration(minutes: Int) {
+        let now = dateProvider()
+        guard core.setWorkDuration(minutes: minutes) else { return }
+
+        workMinutes = core.workMinutes
+        userDefaults.set(workMinutes, forKey: Self.workMinutesDefaultsKey)
+        notice = status == .idle
+            ? "下一轮将按 \(workMinutes) 分钟计时"
+            : "新的用眼时长将在下一轮生效"
+        sync(at: now)
+    }
+
+    func selectRest(_ duration: TimerCore.RestDuration) {
+        let now = dateProvider()
+        handleTick(now)
+        guard core.selectRest(duration, at: now) else { return }
+
+        notice = duration == .oneMinute ? "这次休息 1 分钟" : "这次休息 20 秒"
+        startTicker()
+        backgroundAudioKeeper.start()
+        haptic.notificationOccurred(.success)
+        scheduleCurrentDeadline(at: now)
+        sync(at: now)
+    }
+
+    func handleNotificationAction(identifier: String) {
+        switch identifier {
+        case NotificationSchedule.restTwentySecondsActionIdentifier:
+            selectRest(.twentySeconds)
+        case NotificationSchedule.restOneMinuteActionIdentifier:
+            selectRest(.oneMinute)
+        default:
+            break
+        }
+    }
+
+    func handleNotificationOpen(requestIdentifier: String) {
+        guard requestIdentifier == NotificationSchedule.restChoiceRequestIdentifier else {
+            return
+        }
+
+        handleTick(dateProvider())
+    }
+
+    func refreshNotificationAuthorization() {
+        notificationScheduler.authorizationStatus { [weak self] status in
+            Task { @MainActor in
+                guard let self else { return }
+
+                self.notificationPermissionDenied = status == .denied
+                if status == .authorized || status == .provisional {
+                    if self.notice == Self.notificationDeniedMessage {
+                        self.notice = nil
+                    }
+                } else if status == .denied, self.isRunning {
+                    self.notice = Self.notificationDeniedMessage
+                }
+            }
+        }
+    }
+
+    func openNotificationSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+
+        UIApplication.shared.open(url)
+    }
+
     func handleTick(_ now: Date) {
         if let event = core.tick(at: now) {
             switch event {
+            case .restChoiceRequired:
+                haptic.notificationOccurred(.warning)
+                scheduleRestEndFallback(at: now)
+
             case .phaseChanged(.lookAway):
                 haptic.notificationOccurred(.success)
+                scheduleCurrentDeadline(at: now)
 
             case .phaseChanged(.work):
-                break
+                haptic.notificationOccurred(.success)
+                notice = "休息结束，可以继续下一轮用眼了"
+                scheduleCurrentDeadline(at: now)
             }
-
-            scheduleCurrentDeadline(at: now)
         }
 
         sync(at: now)
@@ -153,6 +259,9 @@ final class TimerViewModel: ObservableObject {
         remaining = core.remaining(at: date)
         progress = core.progress(at: date)
         completedWorkCycles = core.completedWorkCycles
+        restChoiceSecondsRemaining = status == .awaitingRestChoice
+            ? max(0, Int(ceil(remaining)))
+            : 0
     }
 
     private func handleLock() {
@@ -176,11 +285,15 @@ final class TimerViewModel: ObservableObject {
         case .resumed:
             notice = "已接着刚才的进度计时"
 
+        case .resumedRestChoice:
+            notice = "已恢复休息选择"
+
         case .reset:
             notice = "离开超过 1 分钟，已重新开始 20 分钟"
         }
 
         startTicker()
+        backgroundAudioKeeper.start()
         sync(at: now)
         scheduleCurrentDeadline(at: now)
     }
@@ -199,19 +312,58 @@ final class TimerViewModel: ObservableObject {
                 if granted {
                     self.scheduleCurrentDeadline(at: self.dateProvider())
                 } else {
-                    self.notice = "通知权限未开启，后台到点时可能没有声音提醒。"
+                    self.notificationPermissionDenied = true
+                    self.notice = Self.notificationDeniedMessage
                 }
             }
         }
     }
 
     private func scheduleCurrentDeadline(at date: Date) {
-        guard core.status == .running, core.phase == .work else {
+        switch core.status {
+        case .idle, .locked:
             notificationScheduler.cancelAll()
             return
-        }
 
-        let deadline = date.addingTimeInterval(core.remaining(at: date))
-        notificationScheduler.schedule(deadline: deadline)
+        case .awaitingRestChoice:
+            let remaining = core.remaining(at: date)
+            notificationScheduler.schedule(
+                .restChoice(deadline: date.addingTimeInterval(remaining))
+            )
+            notificationScheduler.schedule(
+                .restEnd(
+                    deadline: date.addingTimeInterval(
+                        remaining + TimerCore.lookAwayDuration
+                    )
+                )
+            )
+
+        case .running:
+            switch core.phase {
+            case .work:
+                notificationScheduler.schedule(
+                    .restChoice(
+                        deadline: date.addingTimeInterval(core.remaining(at: date))
+                    )
+                )
+
+            case .lookAway:
+                notificationScheduler.schedule(
+                    .restEnd(
+                        deadline: date.addingTimeInterval(core.remaining(at: date))
+                    )
+                )
+            }
+        }
+    }
+
+    private func scheduleRestEndFallback(at date: Date) {
+        notificationScheduler.schedule(
+            .restEnd(
+                deadline: date.addingTimeInterval(
+                    TimerCore.restChoiceDuration + TimerCore.lookAwayDuration
+                )
+            )
+        )
     }
 }
