@@ -142,10 +142,19 @@ const requiredFiles = [
   "EyeCare2020/Services/LockObserver.swift",
   "EyeCare2020/Services/NotificationScheduler.swift",
   "EyeCare2020/Services/BackgroundAudioKeeper.swift",
+  "EyeCare2020/Services/LiveActivityManager.swift",
+  "EyeCare2020/Services/RestSoundPlayer.swift",
   "EyeCare2020/ViewModels/TimerViewModel.swift",
   "EyeCare2020/Theme/AppTheme.swift",
   "EyeCare2020/Info.plist",
   "EyeCare2020/Resources/silence.wav",
+  "EyeCare2020/Resources/soft-chime.wav",
+  "EyeCare2020/Resources/woodblock.wav",
+  "EyeCare2020/Resources/double-bell.wav",
+  "EyeCare2020/Resources/digital-beep.wav",
+  "EyeCare2020LiveActivity/EyeCareLiveActivityAttributes.swift",
+  "EyeCare2020LiveActivity/EyeCareLiveActivityWidget.swift",
+  "EyeCare2020LiveActivity/Info.plist",
   "EyeCare2020/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
   "EyeCare2020Tests/TimerCoreTests.swift",
   "EyeCare2020Tests/NotificationScheduleTests.swift",
@@ -172,7 +181,7 @@ const objects = project.objects;
 const rootProject = objects[project.rootObject];
 
 check("project root object parses", rootProject?.isa === "PBXProject");
-check("project has app and test targets", rootProject.targets?.length === 2);
+check("project has app, widget extension, and test targets", rootProject.targets?.length === 3);
 check("app and test products exist", rootProject.productRefGroup && objects[rootProject.productRefGroup]);
 check("main group exists", objects[rootProject.mainGroup]?.isa === "PBXGroup");
 
@@ -240,10 +249,18 @@ for (const file of [
   "LockObserver.swift",
   "NotificationScheduler.swift",
   "BackgroundAudioKeeper.swift",
+  "LiveActivityManager.swift",
+  "RestSoundPlayer.swift",
   "TimerViewModel.swift",
   "AppTheme.swift",
   "Assets.xcassets",
   "silence.wav",
+  "soft-chime.wav",
+  "woodblock.wav",
+  "double-bell.wav",
+  "digital-beep.wav",
+  "EyeCareLiveActivityAttributes.swift",
+  "EyeCareLiveActivityWidget.swift",
   "TimerCoreTests.swift",
   "NotificationScheduleTests.swift",
 ]) {
@@ -258,8 +275,12 @@ for (const file of [
   "LockObserver.swift",
   "NotificationScheduler.swift",
   "BackgroundAudioKeeper.swift",
+  "LiveActivityManager.swift",
+  "RestSoundPlayer.swift",
   "TimerViewModel.swift",
   "AppTheme.swift",
+  "EyeCareLiveActivityAttributes.swift",
+  "EyeCareLiveActivityWidget.swift",
   "TimerCoreTests.swift",
   "NotificationScheduleTests.swift",
 ]) {
@@ -273,12 +294,17 @@ for (const identifier of scheme.match(/BlueprintIdentifier = "([A-F0-9]{24})"/g)
   check(`scheme target ${value} exists`, pbxproj.includes(value));
 }
 check("app target exists", pbxproj.includes('productType = "com.apple.product-type.application"'));
+check(
+  "widget extension target exists",
+  pbxproj.includes('productType = "com.apple.product-type.app-extension"'),
+);
 check("test target exists", pbxproj.includes('productType = "com.apple.product-type.bundle.unit-test"'));
 check(
   "project identifiers are 24-digit hex",
   !/\b(?=[A-Z0-9]*[G-Z])[A-Z][A-Z0-9]{23}\b/.test(pbxproj),
 );
 check("audio background mode configured", infoPlist.includes("<string>audio</string>"));
+check("Live Activities enabled", infoPlist.includes("<key>NSSupportsLiveActivities</key>"));
 check("display name configured", infoPlist.includes("<string>远眺</string>"));
 check(
   "iOS 17 deployment target",
@@ -379,6 +405,26 @@ const wav = readFileSync(join(root, "EyeCare2020", "Resources", "silence.wav"));
 check("silent audio is RIFF/WAVE", wav.toString("ascii", 0, 4) === "RIFF" && wav.toString("ascii", 8, 12) === "WAVE");
 check("silent audio is 44.1 kHz mono 16-bit", wav.readUInt32LE(24) === 44_100 && wav.readUInt16LE(22) === 1 && wav.readUInt16LE(34) === 16);
 check("silent audio contains no non-zero samples", !wav.subarray(44).some(Boolean));
+for (const soundFile of [
+  "soft-chime.wav",
+  "woodblock.wav",
+  "double-bell.wav",
+  "digital-beep.wav",
+]) {
+  const sound = readFileSync(join(root, "EyeCare2020", "Resources", soundFile));
+  check(
+    `${soundFile} is 44.1 kHz mono 16-bit WAVE`,
+    sound.toString("ascii", 0, 4) === "RIFF" &&
+      sound.toString("ascii", 8, 12) === "WAVE" &&
+      sound.readUInt32LE(24) === 44_100 &&
+      sound.readUInt16LE(22) === 1 &&
+      sound.readUInt16LE(34) === 16,
+  );
+  check(
+    `${soundFile} is a short notification sound`,
+    sound.length > 44 && sound.length < 1_000_000,
+  );
+}
 
 const swiftFiles = [];
 function walkSwift(directory) {
@@ -393,6 +439,7 @@ function walkSwift(directory) {
 }
 walkSwift(join(root, "EyeCare2020"));
 walkSwift(join(root, "EyeCare2020Tests"));
+walkSwift(join(root, "EyeCare2020LiveActivity"));
 
 for (const file of swiftFiles) {
   const content = readFileSync(file, "utf8");
@@ -443,7 +490,7 @@ for (const file of swiftFiles) {
   );
 }
 
-check("Swift source files present", swiftFiles.length === 11, `${swiftFiles.length} files`);
+check("Swift source files present", swiftFiles.length === 15, `${swiftFiles.length} files`);
 check("plist is XML", infoPlist.startsWith("<?xml") && infoPlist.trimEnd().endsWith("</plist>"));
 check("project block is balanced", (pbxproj.match(/\{/g) ?? []).length === (pbxproj.match(/\}/g) ?? []).length);
 check("scheme XML root exists", scheme.includes("<Scheme") && scheme.includes("</Scheme>"));

@@ -12,7 +12,7 @@ The existing lock-screen rules remain unchanged.
   choice panel with "休息 20 秒" and "休息 1 分钟".
 - If the app is in the background with the screen on, the same choice appears
   as an actionable system notification.
-- If no choice is made within 10 seconds, the 20-second break starts
+- If no choice is made within 5 seconds, the 20-second break starts
   automatically.
 - A choice applies only to the current break. The next work interval always
   returns to the configured work duration.
@@ -30,7 +30,7 @@ The existing lock-screen rules remain unchanged.
 
 `TimerCore` gains an explicit `awaitingRestChoice` status, a `RestDuration`
 value of 20 or 60 seconds, and a validated work-duration setting. The state
-machine owns the 10-second choice timeout, starts the selected break, and
+machine owns the 5-second choice timeout, starts the selected break, and
 preserves the pending choice when the screen locks.
 
 `TimerViewModel` maps state-machine events to haptics, the in-app panel, and
@@ -50,6 +50,14 @@ and forwards the selected action to the view model.
 - Choosing 1 minute replaces the pending 20-second completion notification.
 - Notification authorization failures do not block the timer or in-app choice
   panel.
+
+## Sounds and Live Activities
+
+- Four short bundled WAV files provide selectable break-completion sounds.
+  The selection is persisted and can be previewed from settings.
+- A WidgetKit extension renders a lock-screen Live Activity and Dynamic Island
+  presentation. It displays the current phase, pause state, and countdown
+  without requiring per-second app updates.
 
 ## Verification
 

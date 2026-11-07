@@ -47,7 +47,8 @@ final class AppNotificationDelegate: NSObject, UNUserNotificationCenterDelegate 
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         if notification.request.identifier == NotificationSchedule.restEndRequestIdentifier {
-            completionHandler([.banner, .sound])
+            // The timer plays the selected sound itself to avoid a double sound.
+            completionHandler([.banner])
         } else {
             // The in-app choice panel avoids a duplicate banner in the foreground.
             completionHandler([.sound])
