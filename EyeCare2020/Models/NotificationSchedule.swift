@@ -1,8 +1,39 @@
 import Foundation
 
+enum RestEndSound: String, CaseIterable, Hashable {
+    case softChime = "soft-chime"
+    case woodblock
+    case doubleBell = "double-bell"
+    case digitalBeep = "digital-beep"
+
+    static let defaultSound = RestEndSound.softChime
+
+    var title: String {
+        switch self {
+        case .softChime:
+            return "柔和提示"
+        case .woodblock:
+            return "木鱼"
+        case .doubleBell:
+            return "双音铃"
+        case .digitalBeep:
+            return "电子滴声"
+        }
+    }
+
+    var fileName: String {
+        "\(rawValue).wav"
+    }
+}
+
 struct NotificationActionPlan: Equatable {
     let identifier: String
     let title: String
+}
+
+enum NotificationSoundPlan: Equatable {
+    case none
+    case defaultSound
 }
 
 struct NotificationSchedule: Equatable {
@@ -19,24 +50,22 @@ struct NotificationSchedule: Equatable {
     let body: String
     let deadline: Date
     let actions: [NotificationActionPlan]
+    let sound: NotificationSoundPlan
 
     static func restChoice(deadline: Date) -> NotificationSchedule {
         NotificationSchedule(
             identifier: restChoiceRequestIdentifier,
             categoryIdentifier: restChoiceCategoryIdentifier,
-            title: "该让眼睛休息了",
-            body: "选择休息 20 秒或 1 分钟。",
+            title: "休息 20 秒已开始",
+            body: "想休息更久，可展开通知改为 1 分钟。",
             deadline: deadline,
             actions: [
-                NotificationActionPlan(
-                    identifier: restTwentySecondsActionIdentifier,
-                    title: "休息 20 秒"
-                ),
                 NotificationActionPlan(
                     identifier: restOneMinuteActionIdentifier,
                     title: "休息 1 分钟"
                 )
-            ]
+            ],
+            sound: .defaultSound
         )
     }
 
@@ -47,7 +76,8 @@ struct NotificationSchedule: Equatable {
             title: "休息结束",
             body: "可以继续下一轮用眼了。",
             deadline: deadline,
-            actions: []
+            actions: [],
+            sound: .none
         )
     }
 }

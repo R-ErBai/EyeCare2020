@@ -222,4 +222,85 @@ wav.write("data", 36);
 wav.writeUInt32LE(dataSize, 40);
 writeFileSync(join(resources, "silence.wav"), wav);
 
-console.log("Generated AppIcon-1024.png and silence.wav");
+function createSoundEffect(duration, sampleAt) {
+  const soundSampleRate = 44100;
+  const soundChannels = 1;
+  const soundBits = 16;
+  const sampleCount = Math.ceil(duration * soundSampleRate);
+  const bytesPerSample = soundBits / 8;
+  const soundDataSize = sampleCount * soundChannels * bytesPerSample;
+  const output = Buffer.alloc(44 + soundDataSize);
+
+  output.write("RIFF", 0);
+  output.writeUInt32LE(36 + soundDataSize, 4);
+  output.write("WAVE", 8);
+  output.write("fmt ", 12);
+  output.writeUInt32LE(16, 16);
+  output.writeUInt16LE(1, 20);
+  output.writeUInt16LE(soundChannels, 22);
+  output.writeUInt32LE(soundSampleRate, 24);
+  output.writeUInt32LE(soundSampleRate * soundChannels * bytesPerSample, 28);
+  output.writeUInt16LE(soundChannels * bytesPerSample, 32);
+  output.writeUInt16LE(soundBits, 34);
+  output.write("data", 36);
+  output.writeUInt32LE(soundDataSize, 40);
+
+  for (let index = 0; index < sampleCount; index += 1) {
+    const time = index / soundSampleRate;
+    const sample = Math.max(-1, Math.min(1, sampleAt(time, duration)));
+    output.writeInt16LE(Math.round(sample * 32767), 44 + index * bytesPerSample);
+  }
+
+  return output;
+}
+
+function smoothEnvelope(time, duration, attack = 0.012, release = 0.12) {
+  const attackGain = Math.min(1, time / attack);
+  const releaseGain = Math.min(1, Math.max(0, (duration - time) / release));
+  return Math.max(0, Math.min(attackGain, releaseGain));
+}
+
+const soundEffects = {
+  "soft-chime.wav": createSoundEffect(0.68, (time, duration) => {
+    const envelope = smoothEnvelope(time, duration) * Math.exp(-3.2 * time);
+    return (
+      Math.sin(2 * Math.PI * 880 * time) * 0.34 +
+      Math.sin(2 * Math.PI * 1320 * time) * 0.16
+    ) * envelope;
+  }),
+  "woodblock.wav": createSoundEffect(0.22, (time, duration) => {
+    const envelope = smoothEnvelope(time, duration, 0.003, 0.08) * Math.exp(-18 * time);
+    return (
+      Math.sin(2 * Math.PI * 620 * time) * 0.48 +
+      Math.sin(2 * Math.PI * 930 * time) * 0.18
+    ) * envelope;
+  }),
+  "double-bell.wav": createSoundEffect(0.78, (time, duration) => {
+    const isSecondBell = time >= 0.28;
+    const noteTime = isSecondBell ? time - 0.28 : time;
+    const frequency = isSecondBell ? 1318 : 1046;
+    const envelope = smoothEnvelope(noteTime, 0.42, 0.008, 0.2) * Math.exp(-5.5 * noteTime);
+    return (
+      Math.sin(2 * Math.PI * frequency * noteTime) * 0.32 +
+      Math.sin(2 * Math.PI * frequency * 2 * noteTime) * 0.07
+    ) * envelope * smoothEnvelope(time, duration, 0.004, 0.04);
+  }),
+  "digital-beep.wav": createSoundEffect(0.48, (time) => {
+    const isFirstBeep = time >= 0.02 && time < 0.14;
+    const isSecondBeep = time >= 0.21 && time < 0.35;
+    if (!isFirstBeep && !isSecondBeep) return 0;
+
+    const localTime = isFirstBeep ? time - 0.02 : time - 0.21;
+    const duration = 0.12;
+    const frequency = isFirstBeep ? 780 : 1040;
+    return Math.sin(2 * Math.PI * frequency * localTime) *
+      smoothEnvelope(localTime, duration, 0.006, 0.025) *
+      0.35;
+  }),
+};
+
+for (const [fileName, data] of Object.entries(soundEffects)) {
+  writeFileSync(join(resources, fileName), data);
+}
+
+console.log("Generated AppIcon-1024.png, silence.wav, and four rest-end sounds");

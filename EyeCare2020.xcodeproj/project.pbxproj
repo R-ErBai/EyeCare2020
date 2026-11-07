@@ -20,6 +20,16 @@
 		B1000000000000000000000B /* TimerCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000C /* TimerCoreTests.swift */; };
 		B1000000000000000000000C /* NotificationSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000F /* NotificationSchedule.swift */; };
 		B1000000000000000000000D /* NotificationScheduleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000010 /* NotificationScheduleTests.swift */; };
+		B20000000000000000000001 /* EyeCareLiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* EyeCareLiveActivityAttributes.swift */; };
+		B20000000000000000000002 /* EyeCareLiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* EyeCareLiveActivityAttributes.swift */; };
+		B20000000000000000000003 /* EyeCareLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* EyeCareLiveActivityWidget.swift */; };
+		B20000000000000000000004 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000003 /* LiveActivityManager.swift */; };
+		B20000000000000000000005 /* RestSoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000004 /* RestSoundPlayer.swift */; };
+		B20000000000000000000006 /* soft-chime.wav in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000007 /* soft-chime.wav */; };
+		B20000000000000000000007 /* woodblock.wav in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000008 /* woodblock.wav */; };
+		B20000000000000000000008 /* double-bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000009 /* double-bell.wav */; };
+		B20000000000000000000009 /* digital-beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = F2000000000000000000000A /* digital-beep.wav */; };
+		B2000000000000000000000A /* EyeCare2020LiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F20000000000000000000006 /* EyeCare2020LiveActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +39,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CDD23D02C15962B0CBFEB61B;
 			remoteInfo = EyeCare2020;
+		};
+		C20000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A20000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E20000000000000000000001;
+			remoteInfo = EyeCare2020LiveActivity;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -49,6 +66,16 @@
 		F1000000000000000000000E /* EyeCare2020Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyeCare2020Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1000000000000000000000F /* NotificationSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedule.swift; sourceTree = "<group>"; };
 		F10000000000000000000010 /* NotificationScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduleTests.swift; sourceTree = "<group>"; };
+		F20000000000000000000001 /* EyeCareLiveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeCareLiveActivityAttributes.swift; sourceTree = "<group>"; };
+		F20000000000000000000002 /* EyeCareLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeCareLiveActivityWidget.swift; sourceTree = "<group>"; };
+		F20000000000000000000003 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
+		F20000000000000000000004 /* RestSoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestSoundPlayer.swift; sourceTree = "<group>"; };
+		F20000000000000000000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F20000000000000000000006 /* EyeCare2020LiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EyeCare2020LiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F20000000000000000000007 /* soft-chime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "soft-chime.wav"; sourceTree = "<group>"; };
+		F20000000000000000000008 /* woodblock.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = woodblock.wav; sourceTree = "<group>"; };
+		F20000000000000000000009 /* double-bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "double-bell.wav"; sourceTree = "<group>"; };
+		F2000000000000000000000A /* digital-beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "digital-beep.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +93,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D20000000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D20000000000000000000004 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B2000000000000000000000A /* EyeCare2020LiveActivity.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXGroup section */
 		094A1B67CB64329ED83A23A3 = {
@@ -74,6 +122,7 @@
 			children = (
 				3B3269B1AC686CB4697FD849 /* EyeCare2020 */,
 				659B929EA9C69D84D00CFA5C /* EyeCare2020Tests */,
+				C20000000000000000000002 /* EyeCare2020LiveActivity */,
 				34453FBE6B01D70555BB7F08 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -83,6 +132,7 @@
 			children = (
 				F1000000000000000000000D /* EyeCare2020.app */,
 				F1000000000000000000000E /* EyeCare2020Tests.xctest */,
+				F20000000000000000000006 /* EyeCare2020LiveActivity.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -94,8 +144,9 @@
 				F10000000000000000000002 /* ContentView.swift */,
 				41F65F646B3B59AD04A62216 /* Timer */,
 				C912BCBC8B13AD4A1D7A5893 /* Models */,
-				C8039846921FA90AF4FC29E6 /* Services */,
+					C8039846921FA90AF4FC29E6 /* Services */,
 				283ACE5C8950FE9A3C7EC3FC /* ViewModels */,
+				C20000000000000000000003 /* Shared */,
 				622B65A3044AEA81A0040E9C /* Theme */,
 				208716B8B94F73657659D955 /* Resources */,
 				F10000000000000000000009 /* Assets.xcassets */,
@@ -126,6 +177,8 @@
 				F10000000000000000000004 /* LockObserver.swift */,
 				F10000000000000000000005 /* NotificationScheduler.swift */,
 				F10000000000000000000006 /* BackgroundAudioKeeper.swift */,
+				F20000000000000000000003 /* LiveActivityManager.swift */,
+				F20000000000000000000004 /* RestSoundPlayer.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -159,8 +212,30 @@
 			isa = PBXGroup;
 			children = (
 				F1000000000000000000000A /* silence.wav */,
+				F20000000000000000000007 /* soft-chime.wav */,
+				F20000000000000000000008 /* woodblock.wav */,
+				F20000000000000000000009 /* double-bell.wav */,
+				F2000000000000000000000A /* digital-beep.wav */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		C20000000000000000000002 /* EyeCare2020LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				F20000000000000000000002 /* EyeCareLiveActivityWidget.swift */,
+				F20000000000000000000005 /* Info.plist */,
+			);
+			path = EyeCare2020LiveActivity;
+			sourceTree = "<group>";
+		};
+		C20000000000000000000003 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F20000000000000000000001 /* EyeCareLiveActivityAttributes.swift */,
+			);
+			name = Shared;
+			path = ../EyeCare2020LiveActivity;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,16 +247,35 @@
 			buildPhases = (
 				DC6E4C2C64F0586898FA066A /* Sources */,
 				676BCBEFF7AA6BB8F32D9503 /* Resources */,
+				D20000000000000000000004 /* Embed Foundation Extensions */,
 				A696F878BC84E70C8B394900 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D20000000000000000000005 /* PBXTargetDependency */,
 			);
 			name = EyeCare2020;
 			productName = EyeCare2020;
 			productReference = F1000000000000000000000D /* EyeCare2020.app */;
 			productType = "com.apple.product-type.application";
+		};
+		E20000000000000000000001 /* EyeCare2020LiveActivity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E20000000000000000000002 /* Build configuration list for PBXNativeTarget "EyeCare2020LiveActivity" */;
+			buildPhases = (
+				D20000000000000000000001 /* Sources */,
+				D20000000000000000000002 /* Resources */,
+				D20000000000000000000003 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EyeCare2020LiveActivity;
+			productName = EyeCare2020LiveActivity;
+			productReference = F20000000000000000000006 /* EyeCare2020LiveActivity.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		6C38870380CCF135EB787B9F /* EyeCare2020Tests */ = {
 			isa = PBXNativeTarget;
@@ -218,6 +312,9 @@
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = CDD23D02C15962B0CBFEB61B;
 					};
+					E20000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 				};
 			};
 			buildConfigurationList = C1595E938E8D4AF0BD59BD6C /* Build configuration list for PBXProject "EyeCare2020" */;
@@ -235,6 +332,7 @@
 			projectRoot = "";
 			targets = (
 				CDD23D02C15962B0CBFEB61B /* EyeCare2020 */,
+				E20000000000000000000001 /* EyeCare2020LiveActivity */,
 				6C38870380CCF135EB787B9F /* EyeCare2020Tests */,
 			);
 		};
@@ -247,6 +345,17 @@
 			files = (
 				B10000000000000000000009 /* Assets.xcassets in Resources */,
 				B1000000000000000000000A /* silence.wav in Resources */,
+				B20000000000000000000006 /* soft-chime.wav in Resources */,
+				B20000000000000000000007 /* woodblock.wav in Resources */,
+				B20000000000000000000008 /* double-bell.wav in Resources */,
+				B20000000000000000000009 /* digital-beep.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +382,18 @@
 				B10000000000000000000007 /* TimerViewModel.swift in Sources */,
 				B10000000000000000000008 /* AppTheme.swift in Sources */,
 				B1000000000000000000000C /* NotificationSchedule.swift in Sources */,
+				B20000000000000000000001 /* EyeCareLiveActivityAttributes.swift in Sources */,
+				B20000000000000000000004 /* LiveActivityManager.swift in Sources */,
+				B20000000000000000000005 /* RestSoundPlayer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000002 /* EyeCareLiveActivityAttributes.swift in Sources */,
+				B20000000000000000000003 /* EyeCareLiveActivityWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +413,11 @@
 			isa = PBXTargetDependency;
 			target = CDD23D02C15962B0CBFEB61B /* EyeCare2020 */;
 			targetProxy = 6CA86AB2F69FCD54A92ECFE7 /* PBXContainerItemProxy */;
+		};
+		D20000000000000000000005 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E20000000000000000000001 /* EyeCare2020LiveActivity */;
+			targetProxy = C20000000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -419,7 +545,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -428,7 +554,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -445,7 +571,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -454,7 +580,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -470,7 +596,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -478,7 +604,7 @@
 					"@loader_path/Frameworks",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -493,7 +619,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -501,13 +627,65 @@
 					"@loader_path/Frameworks",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EyeCare2020.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EyeCare2020";
+			};
+			name = Release;
+		};
+		E20000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EyeCare2020LiveActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		E20000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EyeCare2020LiveActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.personal.EyeCare2020.LiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -537,6 +715,15 @@
 			buildConfigurations = (
 				C10000000000000000000005 /* Debug */,
 				C10000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E20000000000000000000002 /* Build configuration list for PBXNativeTarget "EyeCare2020LiveActivity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E20000000000000000000003 /* Debug */,
+				E20000000000000000000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

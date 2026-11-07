@@ -43,10 +43,10 @@ const source = {
       category: "utilities",
       versions: [
         {
-          version: "1.1",
-          buildVersion: "2",
+          version: "1.2.2",
+          buildVersion: "5",
           date: buildDate,
-          localizedDescription: "新增休息时长选择、后台通知按钮和休息结束提醒。",
+          localizedDescription: "优化休息提示：到点自动开始 20 秒休息，可直接改为 1 分钟，并修复结束音和实时活动恢复。",
           downloadURL,
           size: ipaSize,
           minOSVersion: "17.0",
