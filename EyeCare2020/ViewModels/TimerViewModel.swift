@@ -40,7 +40,7 @@ final class TimerViewModel: ObservableObject {
         lockObserver: LockObserver = LockObserver(),
         userDefaults: UserDefaults = .standard,
         restSoundPlayer: RestSoundPlayer = RestSoundPlayer(),
-        liveActivityManager: LiveActivityManager = LiveActivityManager()
+        liveActivityManager: LiveActivityManager? = nil
     ) {
         let storedMinutes = userDefaults.object(
             forKey: Self.workMinutesDefaultsKey
@@ -64,7 +64,7 @@ final class TimerViewModel: ObservableObject {
         self.lockObserver = lockObserver
         self.userDefaults = userDefaults
         self.restSoundPlayer = restSoundPlayer
-        self.liveActivityManager = liveActivityManager
+        self.liveActivityManager = liveActivityManager ?? LiveActivityManager()
         self.workMinutes = initialMinutes
         self.restEndSound = initialSound
         self.core = TimerCore(workMinutes: initialMinutes)
