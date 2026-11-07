@@ -34,7 +34,7 @@ struct TimerCore: Equatable {
     static let minimumWorkMinutes = 1
     static let maximumWorkMinutes = 120
     static let lookAwayDuration: TimeInterval = 20
-    static let restChoiceDuration: TimeInterval = 10
+    static let restChoiceDuration: TimeInterval = 5
     static let maximumResumeLockDuration: TimeInterval = 60
 
     private(set) var phase: Phase = .work

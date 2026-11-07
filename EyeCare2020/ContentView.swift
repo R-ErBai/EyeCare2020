@@ -67,9 +67,16 @@ struct ContentView: View {
                 workMinutes: Binding(
                     get: { model.workMinutes },
                     set: { model.setWorkDuration(minutes: $0) }
-                )
+                ),
+                restEndSound: model.restEndSound,
+                onSelectSound: { sound in
+                    model.setRestEndSound(sound)
+                },
+                onPreviewSound: {
+                    model.previewRestEndSound()
+                }
             )
-            .presentationDetents([.height(360)])
+            .presentationDetents([.height(620)])
             .presentationDragIndicator(.visible)
         }
     }
@@ -271,6 +278,9 @@ struct ContentView: View {
 private struct WorkDurationSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var workMinutes: Int
+    let restEndSound: RestEndSound
+    let onSelectSound: (RestEndSound) -> Void
+    let onPreviewSound: () -> Void
 
     var body: some View {
         ZStack {
@@ -317,6 +327,66 @@ private struct WorkDurationSettingsSheet: View {
                 }
                 .pickerStyle(.wheel)
                 .padding(.horizontal, 16)
+
+                Divider()
+                    .overlay(.white.opacity(0.08))
+                    .padding(.horizontal, 22)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("休息结束提示音")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.paper)
+
+                        Spacer()
+
+                        Button {
+                            onPreviewSound()
+                        } label: {
+                            Label("试听", systemImage: "speaker.wave.2")
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                .foregroundStyle(AppTheme.mint)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, 22)
+
+                    HStack(spacing: 8) {
+                        ForEach(RestEndSound.allCases, id: \.self) { sound in
+                            Button {
+                                onSelectSound(sound)
+                            } label: {
+                                VStack(spacing: 5) {
+                                    Image(
+                                        systemName: restEndSound == sound
+                                            ? "checkmark.circle.fill"
+                                            : "circle"
+                                    )
+                                    .font(.system(size: 17, weight: .semibold))
+
+                                    Text(sound.title)
+                                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.75)
+                                }
+                                .foregroundStyle(
+                                    restEndSound == sound
+                                        ? AppTheme.mint
+                                        : AppTheme.paper.opacity(0.62)
+                                )
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 62)
+                                .background(
+                                    .white.opacity(restEndSound == sound ? 0.1 : 0.05),
+                                    in: RoundedRectangle(cornerRadius: 14)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 22)
+                }
+                .padding(.bottom, 10)
             }
             .padding(.bottom, 8)
         }

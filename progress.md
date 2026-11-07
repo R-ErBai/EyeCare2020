@@ -92,6 +92,25 @@
    and put “远眺” under My Apps for auto-refresh.
 5. Run the physical lock-screen and notification tests listed above.
 
+### Configurable interval and notification revision
+
+- **Status:** implemented, released, and installed; physical verification remains.
+- Added a persisted 1–120 minute work interval setting, defaulting to 20 minutes.
+- Changes made during an active cycle apply to the next work interval.
+- Added a foreground 20-second / 1-minute rest choice card.
+- Added actionable background notification choices and a separate break-completion notification.
+- Added notification permission status and a direct link to iOS notification settings.
+- Bumped the app to version 1.1 (build 2).
+- GitHub Actions run `42329736162` passed resource checks, Swift tests, simulator build/tests, and UI build.
+- GitHub Actions release run `42380234323` passed and published release `altstore-42380234323`.
+- Downloaded and verified the released IPA:
+  - size `236985`
+  - SHA-256 `aece6ffd4410ad67ac05b4f8c713fb6acdc0fa7e6af9206f574f76ced684856d`
+  - bundle version `1.1 (2)`
+- Installed the 1.1 IPA and reinstalled AltStore on the connected iPhone with Sideloadly.
+- Pull request `#1` passed the pull-request verification run and was merged into `main`.
+- Remaining: add the AltStore source, put “远眺” into My Apps, verify notification permission, and run the physical foreground/background/lock tests.
+
 ## Error Log
 
 | Timestamp | Error | Attempt | Resolution |

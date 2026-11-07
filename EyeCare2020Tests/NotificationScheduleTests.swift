@@ -25,7 +25,10 @@ final class NotificationScheduleTests: XCTestCase {
     func testRestEndNotificationUsesCompletionIdentifierAndText() {
         let deadline = Date(timeIntervalSince1970: 2_000_060)
 
-        let plan = NotificationSchedule.restEnd(deadline: deadline)
+        let plan = NotificationSchedule.restEnd(
+            deadline: deadline,
+            sound: .digitalBeep
+        )
 
         XCTAssertEqual(plan.identifier, "eye-care-rest-end")
         XCTAssertEqual(plan.categoryIdentifier, nil)
@@ -33,5 +36,12 @@ final class NotificationScheduleTests: XCTestCase {
         XCTAssertEqual(plan.body, "可以继续下一轮用眼了。")
         XCTAssertEqual(plan.deadline, deadline)
         XCTAssertTrue(plan.actions.isEmpty)
+        XCTAssertEqual(plan.soundFileName, "digital-beep.wav")
+    }
+
+    func testRestEndSoundOptionsExposeFourDistinctBundledFiles() {
+        XCTAssertEqual(RestEndSound.allCases.count, 4)
+        XCTAssertEqual(Set(RestEndSound.allCases.map(\.fileName)).count, 4)
+        XCTAssertEqual(RestEndSound.defaultSound.title, "柔和提示")
     }
 }

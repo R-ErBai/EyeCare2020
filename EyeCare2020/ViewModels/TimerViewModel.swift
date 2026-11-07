@@ -14,14 +14,18 @@ final class TimerViewModel: ObservableObject {
     @Published private(set) var restChoiceSecondsRemaining = 0
     @Published private(set) var notificationPermissionDenied = false
     @Published private(set) var workMinutes: Int
+    @Published private(set) var restEndSound: RestEndSound
 
     private var core: TimerCore
     private var ticker: AnyCancellable?
     private var permissionRequested = false
     private let userDefaults: UserDefaults
+    private let restSoundPlayer: RestSoundPlayer
+    private let liveActivityManager: LiveActivityManager
     private static let notificationDeniedMessage =
         "通知权限未开启。前台仍会弹选择框，后台到点可能没有提醒。"
     private static let workMinutesDefaultsKey = "workDurationMinutes"
+    private static let restEndSoundDefaultsKey = "restEndSound"
 
     private let dateProvider: () -> Date
     private let notificationScheduler: NotificationScheduler
@@ -34,7 +38,9 @@ final class TimerViewModel: ObservableObject {
         notificationScheduler: NotificationScheduler = NotificationScheduler(),
         backgroundAudioKeeper: BackgroundAudioKeeper = BackgroundAudioKeeper(),
         lockObserver: LockObserver = LockObserver(),
-        userDefaults: UserDefaults = .standard
+        userDefaults: UserDefaults = .standard,
+        restSoundPlayer: RestSoundPlayer = RestSoundPlayer(),
+        liveActivityManager: LiveActivityManager = LiveActivityManager()
     ) {
         let storedMinutes = userDefaults.object(
             forKey: Self.workMinutesDefaultsKey
@@ -46,13 +52,21 @@ final class TimerViewModel: ObservableObject {
             ),
             TimerCore.maximumWorkMinutes
         )
+        let storedSound = userDefaults.string(
+            forKey: Self.restEndSoundDefaultsKey
+        )
+        let initialSound = RestEndSound(rawValue: storedSound ?? "")
+            ?? .defaultSound
 
         self.dateProvider = dateProvider
         self.notificationScheduler = notificationScheduler
         self.backgroundAudioKeeper = backgroundAudioKeeper
         self.lockObserver = lockObserver
         self.userDefaults = userDefaults
+        self.restSoundPlayer = restSoundPlayer
+        self.liveActivityManager = liveActivityManager
         self.workMinutes = initialMinutes
+        self.restEndSound = initialSound
         self.core = TimerCore(workMinutes: initialMinutes)
 
         lockObserver.onLock = { [weak self] in
@@ -140,6 +154,7 @@ final class TimerViewModel: ObservableObject {
         sync(at: now)
         startTicker()
         backgroundAudioKeeper.start()
+        syncLiveActivity(at: now)
         requestPermissionAndSchedule()
     }
 
@@ -149,6 +164,8 @@ final class TimerViewModel: ObservableObject {
         ticker?.cancel()
         ticker = nil
         backgroundAudioKeeper.stop()
+        restSoundPlayer.stop()
+        liveActivityManager.end()
         notificationScheduler.cancelAll()
         notice = nil
         sync(at: now)
@@ -164,6 +181,20 @@ final class TimerViewModel: ObservableObject {
             ? "下一轮将按 \(workMinutes) 分钟计时"
             : "新的用眼时长将在下一轮生效"
         sync(at: now)
+        if isRunning {
+            syncLiveActivity(at: now)
+        }
+    }
+
+    func setRestEndSound(_ sound: RestEndSound) {
+        restEndSound = sound
+        userDefaults.set(sound.rawValue, forKey: Self.restEndSoundDefaultsKey)
+        restSoundPlayer.play(sound)
+        scheduleDeliveredRestEndSoundUpdate()
+    }
+
+    func previewRestEndSound() {
+        restSoundPlayer.play(restEndSound)
     }
 
     func selectRest(_ duration: TimerCore.RestDuration) {
@@ -177,6 +208,7 @@ final class TimerViewModel: ObservableObject {
         haptic.notificationOccurred(.success)
         scheduleCurrentDeadline(at: now)
         sync(at: now)
+        syncLiveActivity(at: now)
     }
 
     func handleNotificationAction(identifier: String) {
@@ -224,7 +256,9 @@ final class TimerViewModel: ObservableObject {
     }
 
     func handleTick(_ now: Date) {
+        let didTransition: Bool
         if let event = core.tick(at: now) {
+            didTransition = true
             switch event {
             case .restChoiceRequired:
                 haptic.notificationOccurred(.warning)
@@ -237,11 +271,17 @@ final class TimerViewModel: ObservableObject {
             case .phaseChanged(.work):
                 haptic.notificationOccurred(.success)
                 notice = "休息结束，可以继续下一轮用眼了"
+                playRestEndSoundIfActive()
                 scheduleCurrentDeadline(at: now)
             }
+        } else {
+            didTransition = false
         }
 
         sync(at: now)
+        if didTransition {
+            syncLiveActivity(at: now)
+        }
     }
 
     private func startTicker() {
@@ -272,6 +312,7 @@ final class TimerViewModel: ObservableObject {
         ticker = nil
         notificationScheduler.cancelAll()
         sync(at: now)
+        syncLiveActivity(at: now)
     }
 
     private func handleUnlock() {
@@ -296,6 +337,7 @@ final class TimerViewModel: ObservableObject {
         backgroundAudioKeeper.start()
         sync(at: now)
         scheduleCurrentDeadline(at: now)
+        syncLiveActivity(at: now)
     }
 
     private func requestPermissionAndSchedule() {
@@ -334,7 +376,8 @@ final class TimerViewModel: ObservableObject {
                 .restEnd(
                     deadline: date.addingTimeInterval(
                         remaining + TimerCore.lookAwayDuration
-                    )
+                    ),
+                    sound: restEndSound
                 )
             )
 
@@ -350,7 +393,8 @@ final class TimerViewModel: ObservableObject {
             case .lookAway:
                 notificationScheduler.schedule(
                     .restEnd(
-                        deadline: date.addingTimeInterval(core.remaining(at: date))
+                        deadline: date.addingTimeInterval(core.remaining(at: date)),
+                        sound: restEndSound
                     )
                 )
             }
@@ -362,8 +406,75 @@ final class TimerViewModel: ObservableObject {
             .restEnd(
                 deadline: date.addingTimeInterval(
                     TimerCore.restChoiceDuration + TimerCore.lookAwayDuration
-                )
+                ),
+                sound: restEndSound
             )
         )
+    }
+
+    private func playRestEndSoundIfActive() {
+        guard UIApplication.shared.applicationState == .active else { return }
+        restSoundPlayer.play(restEndSound)
+    }
+
+    private func scheduleDeliveredRestEndSoundUpdate() {
+        let now = dateProvider()
+        if core.status == .awaitingRestChoice {
+            notificationScheduler.schedule(
+                .restEnd(
+                    deadline: now.addingTimeInterval(
+                        core.remaining(at: now) + TimerCore.lookAwayDuration
+                    ),
+                    sound: restEndSound
+                )
+            )
+        } else if core.status == .running, core.phase == .lookAway {
+            scheduleCurrentDeadline(at: now)
+        }
+    }
+
+    private func syncLiveActivity(at date: Date) {
+        switch core.status {
+        case .idle:
+            liveActivityManager.end()
+
+        case .locked:
+            liveActivityManager.update(
+                phase: liveActivityPhase,
+                status: .paused,
+                deadline: nil,
+                remaining: core.remaining(at: date),
+                workMinutes: workMinutes
+            )
+
+        case .awaitingRestChoice:
+            let remaining = core.remaining(at: date)
+            liveActivityManager.update(
+                phase: .restChoice,
+                status: .waiting,
+                deadline: date.addingTimeInterval(remaining),
+                remaining: remaining,
+                workMinutes: workMinutes
+            )
+
+        case .running:
+            let remaining = core.remaining(at: date)
+            liveActivityManager.update(
+                phase: liveActivityPhase,
+                status: .running,
+                deadline: date.addingTimeInterval(remaining),
+                remaining: remaining,
+                workMinutes: workMinutes
+            )
+        }
+    }
+
+    private var liveActivityPhase: EyeCareActivityPhase {
+        switch core.phase {
+        case .work:
+            return .work
+        case .lookAway:
+            return .lookAway
+        }
     }
 }

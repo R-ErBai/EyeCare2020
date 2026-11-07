@@ -1,5 +1,31 @@
 import Foundation
 
+enum RestEndSound: String, CaseIterable, Hashable {
+    case softChime = "soft-chime"
+    case woodblock
+    case doubleBell = "double-bell"
+    case digitalBeep = "digital-beep"
+
+    static let defaultSound = RestEndSound.softChime
+
+    var title: String {
+        switch self {
+        case .softChime:
+            return "柔和提示"
+        case .woodblock:
+            return "木鱼"
+        case .doubleBell:
+            return "双音铃"
+        case .digitalBeep:
+            return "电子滴声"
+        }
+    }
+
+    var fileName: String {
+        "\(rawValue).wav"
+    }
+}
+
 struct NotificationActionPlan: Equatable {
     let identifier: String
     let title: String
@@ -19,6 +45,7 @@ struct NotificationSchedule: Equatable {
     let body: String
     let deadline: Date
     let actions: [NotificationActionPlan]
+    let soundFileName: String?
 
     static func restChoice(deadline: Date) -> NotificationSchedule {
         NotificationSchedule(
@@ -36,18 +63,23 @@ struct NotificationSchedule: Equatable {
                     identifier: restOneMinuteActionIdentifier,
                     title: "休息 1 分钟"
                 )
-            ]
+            ],
+            soundFileName: nil
         )
     }
 
-    static func restEnd(deadline: Date) -> NotificationSchedule {
+    static func restEnd(
+        deadline: Date,
+        sound: RestEndSound = .defaultSound
+    ) -> NotificationSchedule {
         NotificationSchedule(
             identifier: restEndRequestIdentifier,
             categoryIdentifier: nil,
             title: "休息结束",
             body: "可以继续下一轮用眼了。",
             deadline: deadline,
-            actions: []
+            actions: [],
+            soundFileName: sound.fileName
         )
     }
 }
