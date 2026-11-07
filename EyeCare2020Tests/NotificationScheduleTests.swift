@@ -6,18 +6,17 @@ import XCTest
 #endif
 
 final class NotificationScheduleTests: XCTestCase {
-    func testRestChoiceNotificationIncludesTwentySecondAndOneMinuteActions() {
+    func testRestNotificationOffersOneMinuteExtension() {
         let deadline = Date(timeIntervalSince1970: 2_000_000)
 
         let plan = NotificationSchedule.restChoice(deadline: deadline)
 
         XCTAssertEqual(plan.identifier, "eye-care-rest-choice")
         XCTAssertEqual(plan.categoryIdentifier, "eye-care-rest-choice-category")
-        XCTAssertEqual(plan.title, "该让眼睛休息了")
-        XCTAssertEqual(plan.body, "展开通知，直接选择休息 20 秒或 1 分钟。")
+        XCTAssertEqual(plan.title, "休息 20 秒已开始")
+        XCTAssertEqual(plan.body, "想休息更久，可展开通知改为 1 分钟。")
         XCTAssertEqual(plan.deadline, deadline)
         XCTAssertEqual(plan.actions, [
-            NotificationActionPlan(identifier: "eye-care-rest-20-seconds", title: "休息 20 秒"),
             NotificationActionPlan(identifier: "eye-care-rest-1-minute", title: "休息 1 分钟")
         ])
     }

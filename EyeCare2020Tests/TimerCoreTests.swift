@@ -63,30 +63,16 @@ final class TimerCoreTests: XCTestCase {
         XCTAssertEqual(core.workMinutes, 20)
     }
 
-    func testWorkDeadlineWaitsFiveSecondsForRestChoice() {
+    func testWorkDeadlineImmediatelyStartsTwentySecondRest() {
         var core = TimerCore()
         core.start(at: epoch)
 
         let event = core.tick(at: epoch.addingTimeInterval(1_200))
 
-        XCTAssertEqual(event, .restChoiceRequired)
-        XCTAssertEqual(core.phase, .work)
-        XCTAssertEqual(core.status, .awaitingRestChoice)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_200)), 5, accuracy: 0.001)
-        XCTAssertEqual(core.completedWorkCycles, 0)
-    }
-
-    func testUnchosenRestDefaultsToTwentySecondsAfterFiveSeconds() {
-        var core = TimerCore()
-        core.start(at: epoch)
-        _ = core.tick(at: epoch.addingTimeInterval(1_200))
-
-        let event = core.tick(at: epoch.addingTimeInterval(1_205))
-
         XCTAssertEqual(event, .phaseChanged(.lookAway))
         XCTAssertEqual(core.phase, .lookAway)
         XCTAssertEqual(core.status, .running)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_205)), 20, accuracy: 0.001)
+        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_200)), 20, accuracy: 0.001)
         XCTAssertEqual(core.completedWorkCycles, 1)
     }
 
@@ -126,7 +112,6 @@ final class TimerCoreTests: XCTestCase {
         var core = TimerCore()
         core.start(at: epoch)
         _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.tick(at: epoch.addingTimeInterval(1_205))
 
         let didSelect = core.selectRest(.oneMinute, at: epoch.addingTimeInterval(1_208))
 
@@ -141,14 +126,13 @@ final class TimerCoreTests: XCTestCase {
         var core = TimerCore()
         core.start(at: epoch)
         _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.tick(at: epoch.addingTimeInterval(1_205))
 
-        let event = core.tick(at: epoch.addingTimeInterval(1_225))
+        let event = core.tick(at: epoch.addingTimeInterval(1_220))
 
         XCTAssertEqual(event, .phaseChanged(.work))
         XCTAssertEqual(core.phase, .work)
         XCTAssertEqual(core.status, .running)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_225)), 1_200, accuracy: 0.001)
+        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_220)), 1_200, accuracy: 0.001)
         XCTAssertEqual(core.completedWorkCycles, 1)
     }
 
@@ -195,24 +179,22 @@ final class TimerCoreTests: XCTestCase {
         var core = TimerCore()
         core.start(at: epoch)
         _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.tick(at: epoch.addingTimeInterval(1_205))
-        _ = core.lock(at: epoch.addingTimeInterval(1_208))
+        _ = core.lock(at: epoch.addingTimeInterval(1_205))
 
-        let result = core.unlock(at: epoch.addingTimeInterval(1_269))
+        let result = core.unlock(at: epoch.addingTimeInterval(1_266))
 
         XCTAssertEqual(result, .reset)
         XCTAssertEqual(core.phase, .work)
         XCTAssertEqual(core.status, .running)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_269)), 1_200, accuracy: 0.001)
+        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_266)), 1_200, accuracy: 0.001)
     }
 
     func testStopReturnsToIdleAndCancelsDeadline() {
         var core = TimerCore()
         core.start(at: epoch)
         _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.tick(at: epoch.addingTimeInterval(1_205))
 
-        core.stop(at: epoch.addingTimeInterval(1_208))
+        core.stop(at: epoch.addingTimeInterval(1_205))
 
         XCTAssertEqual(core.phase, .work)
         XCTAssertEqual(core.status, .idle)
@@ -236,34 +218,4 @@ final class TimerCoreTests: XCTestCase {
         XCTAssertEqual(core.status, .idle)
     }
 
-    func testShortLockWhileRestChoicePendingPreservesChoiceCountdown() {
-        var core = TimerCore()
-        core.start(at: epoch)
-        _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.lock(at: epoch.addingTimeInterval(1_202))
-
-        let result = core.unlock(at: epoch.addingTimeInterval(1_222))
-
-        XCTAssertEqual(result, .resumedRestChoice)
-        XCTAssertEqual(core.status, .awaitingRestChoice)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_222)), 3, accuracy: 0.001)
-        XCTAssertEqual(
-            core.tick(at: epoch.addingTimeInterval(1_225)),
-            .phaseChanged(.lookAway)
-        )
-    }
-
-    func testLongLockWhileRestChoicePendingResetsToFreshWorkCycle() {
-        var core = TimerCore()
-        core.start(at: epoch)
-        _ = core.tick(at: epoch.addingTimeInterval(1_200))
-        _ = core.lock(at: epoch.addingTimeInterval(1_202))
-
-        let result = core.unlock(at: epoch.addingTimeInterval(1_263))
-
-        XCTAssertEqual(result, .reset)
-        XCTAssertEqual(core.status, .running)
-        XCTAssertEqual(core.phase, .work)
-        XCTAssertEqual(core.remaining(at: epoch.addingTimeInterval(1_263)), 1_200, accuracy: 0.001)
-    }
 }

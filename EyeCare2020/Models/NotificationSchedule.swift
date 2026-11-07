@@ -56,14 +56,10 @@ struct NotificationSchedule: Equatable {
         NotificationSchedule(
             identifier: restChoiceRequestIdentifier,
             categoryIdentifier: restChoiceCategoryIdentifier,
-            title: "该让眼睛休息了",
-            body: "展开通知，直接选择休息 20 秒或 1 分钟。",
+            title: "休息 20 秒已开始",
+            body: "想休息更久，可展开通知改为 1 分钟。",
             deadline: deadline,
             actions: [
-                NotificationActionPlan(
-                    identifier: restTwentySecondsActionIdentifier,
-                    title: "休息 20 秒"
-                ),
                 NotificationActionPlan(
                     identifier: restOneMinuteActionIdentifier,
                     title: "休息 1 分钟"

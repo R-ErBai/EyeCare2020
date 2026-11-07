@@ -12,6 +12,7 @@ final class TimerViewModel: ObservableObject {
     @Published private(set) var completedWorkCycles = 0
     @Published private(set) var notice: String?
     @Published private(set) var restChoiceSecondsRemaining = 0
+    @Published private(set) var isRestChoicePresented = false
     @Published private(set) var notificationPermissionDenied = false
     @Published private(set) var workMinutes: Int
     @Published private(set) var restEndSound: RestEndSound
@@ -19,6 +20,7 @@ final class TimerViewModel: ObservableObject {
     private var core: TimerCore
     private var ticker: AnyCancellable?
     private var permissionRequested = false
+    private var restChoiceDismissDeadline: Date?
     private let userDefaults: UserDefaults
     private let restSoundPlayer: RestSoundPlayer
     private let liveActivityManager: LiveActivityManager
@@ -94,7 +96,7 @@ final class TimerViewModel: ObservableObject {
     }
 
     var isAwaitingRestChoice: Bool {
-        status == .awaitingRestChoice
+        isRestChoicePresented
     }
 
     var timeText: String {
@@ -106,8 +108,6 @@ final class TimerViewModel: ObservableObject {
         switch status {
         case .idle:
             return "准备开始"
-        case .awaitingRestChoice:
-            return "该休息了"
         case .locked:
             return "屏幕已锁定"
         case .running:
@@ -119,8 +119,6 @@ final class TimerViewModel: ObservableObject {
         switch status {
         case .idle:
             return "每 \(workMinutes) 分钟，让眼睛休息 20 秒或 1 分钟"
-        case .awaitingRestChoice:
-            return "选择休息 20 秒，或延长到 1 分钟"
         case .locked:
             return "计时已暂停，解锁后会自动处理"
         case .running:
@@ -168,6 +166,7 @@ final class TimerViewModel: ObservableObject {
         liveActivityManager.end()
         notificationScheduler.cancelAll()
         notice = nil
+        dismissRestChoice()
         sync(at: now)
     }
 
@@ -196,12 +195,17 @@ final class TimerViewModel: ObservableObject {
         restSoundPlayer.play(restEndSound)
     }
 
+    func dismissRestChoicePrompt() {
+        dismissRestChoice()
+    }
+
     func selectRest(_ duration: TimerCore.RestDuration) {
         let now = dateProvider()
         handleTick(now)
         guard core.selectRest(duration, at: now) else { return }
 
         notice = duration == .oneMinute ? "这次休息 1 分钟" : "这次休息 20 秒"
+        dismissRestChoice()
         startTicker()
         backgroundAudioKeeper.start()
         haptic.notificationOccurred(.success)
@@ -227,6 +231,20 @@ final class TimerViewModel: ObservableObject {
         }
 
         handleTick(dateProvider())
+    }
+
+    func handleAppBecameActive() {
+        refreshNotificationAuthorization()
+
+        let now = dateProvider()
+        if core.status == .locked {
+            handleUnlock()
+            return
+        }
+
+        handleTick(now)
+        sync(at: now)
+        syncLiveActivity(at: now)
     }
 
     func refreshNotificationAuthorization() {
@@ -259,12 +277,9 @@ final class TimerViewModel: ObservableObject {
         if let event = core.tick(at: now) {
             didTransition = true
             switch event {
-            case .restChoiceRequired:
-                haptic.notificationOccurred(.warning)
-                scheduleRestEndFallback(at: now)
-
             case .phaseChanged(.lookAway):
                 haptic.notificationOccurred(.success)
+                presentRestChoice(at: now)
                 scheduleCurrentDeadline(at: now)
 
             case .phaseChanged(.work):
@@ -298,9 +313,7 @@ final class TimerViewModel: ObservableObject {
         remaining = core.remaining(at: date)
         progress = core.progress(at: date)
         completedWorkCycles = core.completedWorkCycles
-        restChoiceSecondsRemaining = status == .awaitingRestChoice
-            ? max(0, Int(ceil(remaining)))
-            : 0
+        updateRestChoiceCountdown(at: date)
     }
 
     private func handleLock() {
@@ -310,6 +323,7 @@ final class TimerViewModel: ObservableObject {
         ticker?.cancel()
         ticker = nil
         notificationScheduler.cancelAll()
+        dismissRestChoice()
         sync(at: now)
         syncLiveActivity(at: now)
     }
@@ -324,9 +338,6 @@ final class TimerViewModel: ObservableObject {
 
         case .resumed:
             notice = "已接着刚才的进度计时"
-
-        case .resumedRestChoice:
-            notice = "已恢复休息选择"
 
         case .reset:
             notice = "离开超过 1 分钟，已重新开始 20 分钟"
@@ -366,19 +377,6 @@ final class TimerViewModel: ObservableObject {
             notificationScheduler.cancelAll()
             return
 
-        case .awaitingRestChoice:
-            let remaining = core.remaining(at: date)
-            notificationScheduler.schedule(
-                .restChoice(deadline: date.addingTimeInterval(remaining))
-            )
-            notificationScheduler.schedule(
-                .restEnd(
-                    deadline: date.addingTimeInterval(
-                        remaining + TimerCore.lookAwayDuration
-                    )
-                )
-            )
-
         case .running:
             switch core.phase {
             case .work:
@@ -398,14 +396,35 @@ final class TimerViewModel: ObservableObject {
         }
     }
 
-    private func scheduleRestEndFallback(at date: Date) {
-        notificationScheduler.schedule(
-            .restEnd(
-                deadline: date.addingTimeInterval(
-                    TimerCore.restChoiceDuration + TimerCore.lookAwayDuration
-                )
-            )
+    private func presentRestChoice(at date: Date) {
+        restChoiceDismissDeadline = date.addingTimeInterval(
+            TimerCore.restChoicePromptDuration
         )
+        isRestChoicePresented = true
+        updateRestChoiceCountdown(at: date)
+    }
+
+    private func updateRestChoiceCountdown(at date: Date) {
+        guard
+            isRestChoicePresented,
+            let restChoiceDismissDeadline
+        else {
+            restChoiceSecondsRemaining = 0
+            return
+        }
+
+        let remaining = restChoiceDismissDeadline.timeIntervalSince(date)
+        if remaining <= 0 {
+            dismissRestChoice()
+        } else {
+            restChoiceSecondsRemaining = max(0, Int(ceil(remaining)))
+        }
+    }
+
+    private func dismissRestChoice() {
+        isRestChoicePresented = false
+        restChoiceDismissDeadline = nil
+        restChoiceSecondsRemaining = 0
     }
 
     private func playRestEndSound() {
@@ -423,16 +442,6 @@ final class TimerViewModel: ObservableObject {
                 status: .paused,
                 deadline: nil,
                 remaining: core.remaining(at: date),
-                workMinutes: workMinutes
-            )
-
-        case .awaitingRestChoice:
-            let remaining = core.remaining(at: date)
-            liveActivityManager.update(
-                phase: .restChoice,
-                status: .waiting,
-                deadline: date.addingTimeInterval(remaining),
-                remaining: remaining,
                 workMinutes: workMinutes
             )
 

@@ -8,12 +8,11 @@ The existing lock-screen rules remain unchanged.
 
 ## User-facing behavior
 
-- At the end of each 20-minute work interval, the app presents a foreground
-  choice panel with "休息 20 秒" and "休息 1 分钟".
-- If the app is in the background with the screen on, the same choice appears
-  as an actionable system notification.
-- If no choice is made within 5 seconds, the 20-second break starts
-  automatically.
+- At the end of each work interval, the 20-second break starts immediately.
+- The app presents a five-second foreground panel that can keep the default
+  break or extend it to one minute.
+- In the background, an actionable system notification offers the one-minute
+  extension without opening the app.
 - A choice applies only to the current break. The next work interval always
   returns to the configured work duration.
 - A second notification announces that the break has ended.
@@ -28,10 +27,8 @@ The existing lock-screen rules remain unchanged.
 
 ## State model
 
-`TimerCore` gains an explicit `awaitingRestChoice` status, a `RestDuration`
-value of 20 or 60 seconds, and a validated work-duration setting. The state
-machine owns the 5-second choice timeout, starts the selected break, and
-preserves the pending choice when the screen locks.
+`TimerCore` starts the default break at the work deadline, supports extending
+the active break to 60 seconds, and retains a validated work-duration setting.
 
 `TimerViewModel` maps state-machine events to haptics, the in-app panel, and
 notification scheduling. It also persists the work duration and presents a

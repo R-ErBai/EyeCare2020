@@ -43,10 +43,10 @@ const source = {
       category: "utilities",
       versions: [
         {
-          version: "1.2.1",
-          buildVersion: "4",
+          version: "1.2.2",
+          buildVersion: "5",
           date: buildDate,
-          localizedDescription: "修复休息结束提示音，并支持在通知中直接选择休息 20 秒或 1 分钟。",
+          localizedDescription: "优化休息提示：到点自动开始 20 秒休息，可直接改为 1 分钟，并修复结束音和实时活动恢复。",
           downloadURL,
           size: ipaSize,
           minOSVersion: "17.0",

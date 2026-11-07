@@ -46,10 +46,14 @@ struct ContentView: View {
         .overlay {
             if model.isAwaitingRestChoice {
                 RestChoiceOverlay(
-                    secondsRemaining: model.restChoiceSecondsRemaining
-                ) { duration in
-                    model.selectRest(duration)
-                }
+                    secondsRemaining: model.restChoiceSecondsRemaining,
+                    onKeepTwentySeconds: {
+                        model.dismissRestChoicePrompt()
+                    },
+                    onExtendToOneMinute: {
+                        model.selectRest(.oneMinute)
+                    }
+                )
                 .transition(.opacity.combined(with: .scale(scale: 0.97)))
             }
         }
@@ -59,7 +63,7 @@ struct ContentView: View {
         )
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                model.refreshNotificationAuthorization()
+                model.handleAppBecameActive()
             }
         }
         .sheet(isPresented: $isShowingWorkDurationSettings) {
@@ -396,7 +400,8 @@ private struct WorkDurationSettingsSheet: View {
 
 private struct RestChoiceOverlay: View {
     let secondsRemaining: Int
-    let onSelect: (TimerCore.RestDuration) -> Void
+    let onKeepTwentySeconds: () -> Void
+    let onExtendToOneMinute: () -> Void
 
     var body: some View {
         ZStack {
@@ -410,7 +415,7 @@ private struct RestChoiceOverlay: View {
                     .padding(.top, 4)
 
                 VStack(spacing: 8) {
-                    Text("该让眼睛休息了")
+                    Text("休息 20 秒已开始")
                         .font(.system(size: 25, weight: .semibold, design: .serif))
                         .foregroundStyle(AppTheme.paper)
 
@@ -422,25 +427,25 @@ private struct RestChoiceOverlay: View {
 
                 VStack(spacing: 10) {
                     choiceButton(
-                        title: "休息 20 秒",
-                        detail: "标准 20-20-20 节奏",
+                        title: "保持 20 秒",
+                        detail: "按标准 20-20-20 继续",
                         icon: "timer",
                         color: AppTheme.mint
                     ) {
-                        onSelect(.twentySeconds)
+                        onKeepTwentySeconds()
                     }
 
                     choiceButton(
-                        title: "休息 1 分钟",
+                        title: "改为 1 分钟",
                         detail: "这次多放松一会儿",
                         icon: "hourglass",
                         color: AppTheme.amber
                     ) {
-                        onSelect(.oneMinute)
+                        onExtendToOneMinute()
                     }
                 }
 
-                Text("\(max(0, secondsRemaining)) 秒后默认休息 20 秒")
+                Text("\(max(0, secondsRemaining)) 秒后自动收起")
                     .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(AppTheme.paper.opacity(0.48))
             }
