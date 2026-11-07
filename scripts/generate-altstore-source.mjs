@@ -37,16 +37,16 @@ const source = {
       developerName: "个人项目",
       subtitle: "每 20 分钟看向远处 20 秒",
       localizedDescription:
-        "持续运行 20 分钟用眼与 20 秒远眺循环。熄屏时暂停，熄屏超过 1 分钟后重新开始。这是个人侧载版本，通过静音后台音频维持准确计时。",
+        "持续运行 20 分钟用眼循环，到点可选择休息 20 秒或 1 分钟。熄屏时暂停，熄屏超过 1 分钟后重新开始。这是个人侧载版本，通过静音后台音频维持准确计时。",
       iconURL,
       tintColor: "#9FE5BD",
       category: "utilities",
       versions: [
         {
-          version: "1.0",
-          buildVersion: "1",
+          version: "1.1",
+          buildVersion: "2",
           date: buildDate,
-          localizedDescription: "首个个人侧载版本。",
+          localizedDescription: "新增休息时长选择、后台通知按钮和休息结束提醒。",
           downloadURL,
           size: ipaSize,
           minOSVersion: "17.0",

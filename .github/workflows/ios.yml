@@ -2,12 +2,24 @@ name: iOS verification
 
 on:
   push:
+    paths:
+      - "EyeCare2020/**"
+      - "EyeCare2020Tests/**"
+      - "EyeCare2020.xcodeproj/**"
+      - "Package.swift"
+      - ".github/workflows/ios.yml"
   pull_request:
+    paths:
+      - "EyeCare2020/**"
+      - "EyeCare2020Tests/**"
+      - "EyeCare2020.xcodeproj/**"
+      - "Package.swift"
+      - ".github/workflows/ios.yml"
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: macos-15-intel
+    runs-on: macos-26-intel
 
     steps:
       - name: Check out project

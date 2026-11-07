@@ -6,11 +6,11 @@ Deliver a personal-use iPhone app that runs 20-minute near-work and 20-second lo
 
 ## Next Step
 
-Create a public GitHub repository from the packaged project and run the unsigned AltStore release workflow.
+Install AltServer on Windows, sign in with the user's own Apple ID, and run the physical-iPhone lock tests.
 
 ## Current Phase
 
-Phase 4
+Phase 5
 
 ## Phases
 
@@ -38,16 +38,19 @@ Phase 4
 
 ### Phase 4: Testing & Verification
 
-- [ ] Validate timer and lock transition tests in Swift/XCTest
+- [x] Validate timer and lock transition tests in Swift/XCTest
 - [x] Validate project structure and assets
 - [x] Document checks that require Xcode and a physical iPhone
-- **Status:** in_progress
+- **Status:** complete
 
 ### Phase 5: Delivery
 
 - [x] Review all files
 - [x] Package the Xcode project
 - [x] Provide Windows + AltStore deployment and auto-refresh steps
+- [x] Create and populate the public GitHub repository
+- [x] Build and publish the unsigned AltStore release
+- [ ] Install and validate on the physical iPhone
 - **Status:** in_progress
 
 ## Key Questions
@@ -78,4 +81,5 @@ Phase 4
 ## Notes
 
 - The app is designed for personal sideloading, not App Store submission.
-- The final build and physical-device lock tests require macOS with Xcode.
+- The cloud build and automated tests run on GitHub macOS runners.
+- Physical-device lock tests remain to be performed after AltStore installation.

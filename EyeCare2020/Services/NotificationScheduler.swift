@@ -8,6 +8,25 @@ final class NotificationScheduler {
         self.center = center
     }
 
+    func registerCategories() {
+        let actions = NotificationSchedule.restChoice(deadline: .now).actions.map {
+            UNNotificationAction(
+                identifier: $0.identifier,
+                title: $0.title,
+                options: [.foreground]
+            )
+        }
+
+        let category = UNNotificationCategory(
+            identifier: NotificationSchedule.restChoiceCategoryIdentifier,
+            actions: actions,
+            intentIdentifiers: [],
+            options: []
+        )
+
+        center.setNotificationCategories([category])
+    }
+
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         center.requestAuthorization(options: [.alert, .sound]) { granted, _ in
             DispatchQueue.main.async {
@@ -16,8 +35,15 @@ final class NotificationScheduler {
         }
     }
 
-    func schedule(deadline: Date) {
-        let plan = NotificationSchedule.make(deadline: deadline)
+    func authorizationStatus(completion: @escaping (UNAuthorizationStatus) -> Void) {
+        center.getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                completion(settings.authorizationStatus)
+            }
+        }
+    }
+
+    func schedule(_ plan: NotificationSchedule) {
         let timeInterval = plan.deadline.timeIntervalSinceNow
         guard timeInterval >= 1 else { return }
 
@@ -25,6 +51,9 @@ final class NotificationScheduler {
         content.title = plan.title
         content.body = plan.body
         content.sound = .default
+        if let categoryIdentifier = plan.categoryIdentifier {
+            content.categoryIdentifier = categoryIdentifier
+        }
 
         let trigger = UNTimeIntervalNotificationTrigger(
             timeInterval: timeInterval,
@@ -41,7 +70,11 @@ final class NotificationScheduler {
     }
 
     func cancelAll() {
-        let identifiers = [NotificationSchedule.requestIdentifier]
+        let identifiers = [
+            NotificationSchedule.restChoiceRequestIdentifier,
+            NotificationSchedule.restEndRequestIdentifier,
+            NotificationSchedule.legacyRequestIdentifier
+        ]
         center.removePendingNotificationRequests(withIdentifiers: identifiers)
         center.removeDeliveredNotifications(withIdentifiers: identifiers)
     }

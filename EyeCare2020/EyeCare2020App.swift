@@ -8,10 +8,25 @@ struct EyeCare2020App: App {
     private let notificationDelegate: AppNotificationDelegate
 
     init() {
+        let timerViewModel = TimerViewModel()
         let delegate = AppNotificationDelegate()
+        delegate.onNotificationAction = { [weak timerViewModel] identifier in
+            Task { @MainActor in
+                timerViewModel?.handleNotificationAction(identifier: identifier)
+            }
+        }
+        delegate.onNotificationOpen = { [weak timerViewModel] requestIdentifier in
+            Task { @MainActor in
+                timerViewModel?.handleNotificationOpen(
+                    requestIdentifier: requestIdentifier
+                )
+            }
+        }
+
         notificationDelegate = delegate
-        _timerViewModel = StateObject(wrappedValue: TimerViewModel())
+        _timerViewModel = StateObject(wrappedValue: timerViewModel)
         UNUserNotificationCenter.current().delegate = delegate
+        NotificationScheduler().registerCategories()
     }
 
     var body: some Scene {
@@ -23,12 +38,38 @@ struct EyeCare2020App: App {
 }
 
 final class AppNotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    var onNotificationAction: ((String) -> Void)?
+    var onNotificationOpen: ((String) -> Void)?
+
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        // The in-app phase screen is the foreground prompt; the sound still gets attention.
-        completionHandler([.sound])
+        if notification.request.identifier == NotificationSchedule.restEndRequestIdentifier {
+            completionHandler([.banner, .sound])
+        } else {
+            // The in-app choice panel avoids a duplicate banner in the foreground.
+            completionHandler([.sound])
+        }
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        switch response.actionIdentifier {
+        case NotificationSchedule.restTwentySecondsActionIdentifier:
+            onNotificationAction?(response.actionIdentifier)
+        case NotificationSchedule.restOneMinuteActionIdentifier:
+            onNotificationAction?(response.actionIdentifier)
+        case UNNotificationDefaultActionIdentifier:
+            onNotificationOpen?(response.notification.request.identifier)
+        default:
+            break
+        }
+
+        completionHandler()
     }
 }

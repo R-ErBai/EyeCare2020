@@ -3,6 +3,8 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var model: TimerViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isShowingWorkDurationSettings = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -41,6 +43,35 @@ struct ContentView: View {
             )
         }
         .preferredColorScheme(.dark)
+        .overlay {
+            if model.isAwaitingRestChoice {
+                RestChoiceOverlay(
+                    secondsRemaining: model.restChoiceSecondsRemaining
+                ) { duration in
+                    model.selectRest(duration)
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
+        }
+        .animation(
+            reduceMotion ? nil : .easeInOut(duration: 0.25),
+            value: model.isAwaitingRestChoice
+        )
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                model.refreshNotificationAuthorization()
+            }
+        }
+        .sheet(isPresented: $isShowingWorkDurationSettings) {
+            WorkDurationSettingsSheet(
+                workMinutes: Binding(
+                    get: { model.workMinutes },
+                    set: { model.setWorkDuration(minutes: $0) }
+                )
+            )
+            .presentationDetents([.height(360)])
+            .presentationDragIndicator(.visible)
+        }
     }
 
     private var background: some View {
@@ -79,17 +110,36 @@ struct ContentView: View {
 
             Spacer()
 
-            if model.completedWorkCycles > 0 {
-                Text("第 \(model.completedWorkCycles) 轮")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(AppTheme.paper.opacity(0.7))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 7)
-                    .background(.white.opacity(0.07), in: Capsule())
-                    .overlay {
-                        Capsule()
-                            .stroke(.white.opacity(0.08), lineWidth: 1)
-                    }
+            HStack(spacing: 8) {
+                Button {
+                    isShowingWorkDurationSettings = true
+                } label: {
+                    Label("\(model.workMinutes) 分钟", systemImage: "timer")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.paper.opacity(0.76))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(.white.opacity(0.07), in: Capsule())
+                        .overlay {
+                            Capsule()
+                                .stroke(.white.opacity(0.08), lineWidth: 1)
+                        }
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("work-duration-settings-button")
+
+                if model.completedWorkCycles > 0 {
+                    Text("第 \(model.completedWorkCycles) 轮")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.paper.opacity(0.7))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 7)
+                        .background(.white.opacity(0.07), in: Capsule())
+                        .overlay {
+                            Capsule()
+                                .stroke(.white.opacity(0.08), lineWidth: 1)
+                        }
+                }
             }
         }
     }
@@ -138,7 +188,11 @@ struct ContentView: View {
 
     private func phaseCopy(accent: Color) -> some View {
         VStack(spacing: 9) {
-            Text(model.phase == .lookAway && model.status == .running ? "6 米外" : "20 分钟")
+            Text(
+                model.phase == .lookAway && model.status == .running
+                    ? "6 米外"
+                    : "\(model.workMinutes) 分钟"
+            )
                 .font(.system(size: 15, weight: .semibold, design: .serif))
                 .foregroundStyle(accent)
 
@@ -163,6 +217,20 @@ struct ContentView: View {
                     .padding(.vertical, 9)
                     .background(.black.opacity(0.16), in: RoundedRectangle(cornerRadius: 12))
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
+
+            if model.notificationPermissionDenied {
+                Button {
+                    model.openNotificationSettings()
+                } label: {
+                    Label("打开通知设置", systemImage: "bell.badge")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundStyle(AppTheme.amber)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(.white.opacity(0.06), in: Capsule())
+                }
+                .buttonStyle(.plain)
             }
 
             Button {
@@ -197,6 +265,174 @@ struct ContentView: View {
                 .foregroundStyle(AppTheme.paper.opacity(0.38))
                 .padding(.bottom, 2)
         }
+    }
+}
+
+private struct WorkDurationSettingsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var workMinutes: Int
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [AppTheme.forest, AppTheme.moss.opacity(0.88)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("用眼时长")
+                            .font(.system(size: 22, weight: .semibold, design: .serif))
+                            .foregroundStyle(AppTheme.paper)
+
+                        Text("默认 20 分钟，计时中修改会在下一轮生效")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(AppTheme.paper.opacity(0.5))
+                    }
+
+                    Spacer()
+
+                    Button("完成") {
+                        dismiss()
+                    }
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(AppTheme.mint)
+                }
+                .padding(.horizontal, 22)
+                .padding(.top, 14)
+
+                Picker("每轮用眼时长", selection: $workMinutes) {
+                    ForEach(
+                        TimerCore.minimumWorkMinutes...TimerCore.maximumWorkMinutes,
+                        id: \.self
+                    ) { minutes in
+                        Text("\(minutes) 分钟")
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
+                            .foregroundStyle(AppTheme.paper)
+                            .tag(minutes)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .padding(.horizontal, 16)
+            }
+            .padding(.bottom, 8)
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+private struct RestChoiceOverlay: View {
+    let secondsRemaining: Int
+    let onSelect: (TimerCore.RestDuration) -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.62)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Image(systemName: "eye")
+                    .font(.system(size: 30, weight: .light))
+                    .foregroundStyle(AppTheme.mint)
+                    .padding(.top, 4)
+
+                VStack(spacing: 8) {
+                    Text("该让眼睛休息了")
+                        .font(.system(size: 25, weight: .semibold, design: .serif))
+                        .foregroundStyle(AppTheme.paper)
+
+                    Text("看向约 6 米外，让眼睛放松一下")
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundStyle(AppTheme.paper.opacity(0.68))
+                        .multilineTextAlignment(.center)
+                }
+
+                VStack(spacing: 10) {
+                    choiceButton(
+                        title: "休息 20 秒",
+                        detail: "标准 20-20-20 节奏",
+                        icon: "timer",
+                        color: AppTheme.mint
+                    ) {
+                        onSelect(.twentySeconds)
+                    }
+
+                    choiceButton(
+                        title: "休息 1 分钟",
+                        detail: "这次多放松一会儿",
+                        icon: "hourglass",
+                        color: AppTheme.amber
+                    ) {
+                        onSelect(.oneMinute)
+                    }
+                }
+
+                Text("\(max(0, secondsRemaining)) 秒后默认休息 20 秒")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(AppTheme.paper.opacity(0.48))
+            }
+            .padding(.horizontal, 22)
+            .padding(.vertical, 24)
+            .frame(maxWidth: 350)
+            .background {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(LinearGradient(
+                        colors: [AppTheme.moss, AppTheme.forest],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .stroke(.white.opacity(0.12), lineWidth: 1)
+                    }
+                    .shadow(color: .black.opacity(0.38), radius: 32, y: 18)
+            }
+            .padding(.horizontal, 24)
+        }
+        .accessibilityAddTraits(.isModal)
+    }
+
+    private func choiceButton(
+        title: String,
+        detail: String,
+        icon: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 13) {
+                Image(systemName: icon)
+                    .font(.system(size: 26))
+                    .foregroundStyle(color)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundStyle(AppTheme.paper)
+
+                    Text(detail)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.paper.opacity(0.5))
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(AppTheme.paper.opacity(0.36))
+            }
+            .padding(.horizontal, 16)
+            .frame(height: 60)
+            .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 17))
+            .overlay {
+                RoundedRectangle(cornerRadius: 17)
+                    .stroke(color.opacity(0.25), lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 
