@@ -190,7 +190,6 @@ final class TimerViewModel: ObservableObject {
         restEndSound = sound
         userDefaults.set(sound.rawValue, forKey: Self.restEndSoundDefaultsKey)
         restSoundPlayer.play(sound)
-        scheduleDeliveredRestEndSoundUpdate()
     }
 
     func previewRestEndSound() {
@@ -271,7 +270,7 @@ final class TimerViewModel: ObservableObject {
             case .phaseChanged(.work):
                 haptic.notificationOccurred(.success)
                 notice = "休息结束，可以继续下一轮用眼了"
-                playRestEndSoundIfActive()
+                playRestEndSound()
                 scheduleCurrentDeadline(at: now)
             }
         } else {
@@ -376,8 +375,7 @@ final class TimerViewModel: ObservableObject {
                 .restEnd(
                     deadline: date.addingTimeInterval(
                         remaining + TimerCore.lookAwayDuration
-                    ),
-                    sound: restEndSound
+                    )
                 )
             )
 
@@ -393,8 +391,7 @@ final class TimerViewModel: ObservableObject {
             case .lookAway:
                 notificationScheduler.schedule(
                     .restEnd(
-                        deadline: date.addingTimeInterval(core.remaining(at: date)),
-                        sound: restEndSound
+                        deadline: date.addingTimeInterval(core.remaining(at: date))
                     )
                 )
             }
@@ -406,31 +403,13 @@ final class TimerViewModel: ObservableObject {
             .restEnd(
                 deadline: date.addingTimeInterval(
                     TimerCore.restChoiceDuration + TimerCore.lookAwayDuration
-                ),
-                sound: restEndSound
+                )
             )
         )
     }
 
-    private func playRestEndSoundIfActive() {
-        guard UIApplication.shared.applicationState == .active else { return }
+    private func playRestEndSound() {
         restSoundPlayer.play(restEndSound)
-    }
-
-    private func scheduleDeliveredRestEndSoundUpdate() {
-        let now = dateProvider()
-        if core.status == .awaitingRestChoice {
-            notificationScheduler.schedule(
-                .restEnd(
-                    deadline: now.addingTimeInterval(
-                        core.remaining(at: now) + TimerCore.lookAwayDuration
-                    ),
-                    sound: restEndSound
-                )
-            )
-        } else if core.status == .running, core.phase == .lookAway {
-            scheduleCurrentDeadline(at: now)
-        }
     }
 
     private func syncLiveActivity(at date: Date) {

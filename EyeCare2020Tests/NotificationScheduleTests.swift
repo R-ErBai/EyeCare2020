@@ -14,7 +14,7 @@ final class NotificationScheduleTests: XCTestCase {
         XCTAssertEqual(plan.identifier, "eye-care-rest-choice")
         XCTAssertEqual(plan.categoryIdentifier, "eye-care-rest-choice-category")
         XCTAssertEqual(plan.title, "该让眼睛休息了")
-        XCTAssertEqual(plan.body, "选择休息 20 秒或 1 分钟。")
+        XCTAssertEqual(plan.body, "展开通知，直接选择休息 20 秒或 1 分钟。")
         XCTAssertEqual(plan.deadline, deadline)
         XCTAssertEqual(plan.actions, [
             NotificationActionPlan(identifier: "eye-care-rest-20-seconds", title: "休息 20 秒"),
@@ -25,10 +25,7 @@ final class NotificationScheduleTests: XCTestCase {
     func testRestEndNotificationUsesCompletionIdentifierAndText() {
         let deadline = Date(timeIntervalSince1970: 2_000_060)
 
-        let plan = NotificationSchedule.restEnd(
-            deadline: deadline,
-            sound: .digitalBeep
-        )
+        let plan = NotificationSchedule.restEnd(deadline: deadline)
 
         XCTAssertEqual(plan.identifier, "eye-care-rest-end")
         XCTAssertEqual(plan.categoryIdentifier, nil)
@@ -36,7 +33,7 @@ final class NotificationScheduleTests: XCTestCase {
         XCTAssertEqual(plan.body, "可以继续下一轮用眼了。")
         XCTAssertEqual(plan.deadline, deadline)
         XCTAssertTrue(plan.actions.isEmpty)
-        XCTAssertEqual(plan.soundFileName, "digital-beep.wav")
+        XCTAssertEqual(plan.sound, .none)
     }
 
     func testRestEndSoundOptionsExposeFourDistinctBundledFiles() {

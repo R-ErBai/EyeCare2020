@@ -43,10 +43,10 @@ const source = {
       category: "utilities",
       versions: [
         {
-          version: "1.2",
-          buildVersion: "3",
+          version: "1.2.1",
+          buildVersion: "4",
           date: buildDate,
-          localizedDescription: "新增休息结束提示音选择、锁屏实时活动和灵动岛倒计时。",
+          localizedDescription: "修复休息结束提示音，并支持在通知中直接选择休息 20 秒或 1 分钟。",
           downloadURL,
           size: ipaSize,
           minOSVersion: "17.0",

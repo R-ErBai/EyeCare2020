@@ -31,6 +31,11 @@ struct NotificationActionPlan: Equatable {
     let title: String
 }
 
+enum NotificationSoundPlan: Equatable {
+    case none
+    case defaultSound
+}
+
 struct NotificationSchedule: Equatable {
     static let restChoiceRequestIdentifier = "eye-care-rest-choice"
     static let restEndRequestIdentifier = "eye-care-rest-end"
@@ -45,14 +50,14 @@ struct NotificationSchedule: Equatable {
     let body: String
     let deadline: Date
     let actions: [NotificationActionPlan]
-    let soundFileName: String?
+    let sound: NotificationSoundPlan
 
     static func restChoice(deadline: Date) -> NotificationSchedule {
         NotificationSchedule(
             identifier: restChoiceRequestIdentifier,
             categoryIdentifier: restChoiceCategoryIdentifier,
             title: "该让眼睛休息了",
-            body: "选择休息 20 秒或 1 分钟。",
+            body: "展开通知，直接选择休息 20 秒或 1 分钟。",
             deadline: deadline,
             actions: [
                 NotificationActionPlan(
@@ -64,14 +69,11 @@ struct NotificationSchedule: Equatable {
                     title: "休息 1 分钟"
                 )
             ],
-            soundFileName: nil
+            sound: .defaultSound
         )
     }
 
-    static func restEnd(
-        deadline: Date,
-        sound: RestEndSound = .defaultSound
-    ) -> NotificationSchedule {
+    static func restEnd(deadline: Date) -> NotificationSchedule {
         NotificationSchedule(
             identifier: restEndRequestIdentifier,
             categoryIdentifier: nil,
@@ -79,7 +81,7 @@ struct NotificationSchedule: Equatable {
             body: "可以继续下一轮用眼了。",
             deadline: deadline,
             actions: [],
-            soundFileName: sound.fileName
+            sound: .none
         )
     }
 }

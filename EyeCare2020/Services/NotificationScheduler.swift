@@ -13,7 +13,7 @@ final class NotificationScheduler {
             UNNotificationAction(
                 identifier: $0.identifier,
                 title: $0.title,
-                options: [.foreground]
+                options: []
             )
         }
 
@@ -50,12 +50,11 @@ final class NotificationScheduler {
         let content = UNMutableNotificationContent()
         content.title = plan.title
         content.body = plan.body
-        if let soundFileName = plan.soundFileName {
-            content.sound = UNNotificationSound(
-                named: UNNotificationSoundName(rawValue: soundFileName)
-            )
-        } else {
+        switch plan.sound {
+        case .defaultSound:
             content.sound = .default
+        case .none:
+            break
         }
         if let categoryIdentifier = plan.categoryIdentifier {
             content.categoryIdentifier = categoryIdentifier
