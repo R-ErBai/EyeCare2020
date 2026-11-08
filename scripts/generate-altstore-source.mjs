@@ -43,10 +43,10 @@ const source = {
       category: "utilities",
       versions: [
         {
-          version: "1.2.2",
-          buildVersion: "5",
+          version: "1.2.3",
+          buildVersion: "6",
           date: buildDate,
-          localizedDescription: "优化休息提示：到点自动开始 20 秒休息，可直接改为 1 分钟，并修复结束音和实时活动恢复。",
+          localizedDescription: "修复实时活动与 App 计时不同步，并减少灵动岛加载卡顿。",
           downloadURL,
           size: ipaSize,
           minOSVersion: "17.0",

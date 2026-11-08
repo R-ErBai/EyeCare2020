@@ -1,9 +1,14 @@
 import ActivityKit
 import Foundation
+import UIKit
 
 @MainActor
 final class LiveActivityManager {
     private var activity: Activity<EyeCareLiveActivityAttributes>?
+    private var pendingState: EyeCareLiveActivityAttributes.ContentState?
+    private var updateTask: Task<Void, Never>?
+    private var lastSubmittedState: EyeCareLiveActivityAttributes.ContentState?
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     init() {
         activity = Activity<EyeCareLiveActivityAttributes>.activities.first
@@ -25,35 +30,79 @@ final class LiveActivityManager {
             remaining: max(0, remaining),
             workMinutes: workMinutes
         )
-        let content = ActivityContent(
-            state: state,
-            staleDate: deadline ?? Date().addingTimeInterval(3_600)
-        )
+        guard state != lastSubmittedState else { return }
+        pendingState = state
+        scheduleUpdate()
+    }
 
-        if let activity {
-            Task {
-                await activity.update(content)
+    private func scheduleUpdate() {
+        guard updateTask == nil else { return }
+
+        if UIApplication.shared.applicationState != .active,
+           backgroundTask == .invalid {
+            backgroundTask = UIApplication.shared.beginBackgroundTask(
+                withName: "Update Eye Care Live Activity"
+            ) { [weak self] in
+                self?.finishBackgroundTask()
             }
-            return
         }
 
-        do {
-            activity = try Activity.request(
-                attributes: EyeCareLiveActivityAttributes(title: "远眺"),
-                content: content,
-                pushType: nil
+        updateTask = Task(priority: .userInitiated) { [weak self] in
+            await self?.drainUpdates()
+        }
+    }
+
+    private func drainUpdates() async {
+        while let state = pendingState {
+            pendingState = nil
+            let content = ActivityContent(
+                state: state,
+                staleDate: state.deadline ?? Date().addingTimeInterval(3_600)
             )
-        } catch {
-            activity = nil
+
+            if let activity {
+                await activity.update(content)
+                lastSubmittedState = state
+            } else {
+                do {
+                    activity = try Activity.request(
+                        attributes: EyeCareLiveActivityAttributes(title: "远眺"),
+                        content: content,
+                        pushType: nil
+                    )
+                    lastSubmittedState = state
+                } catch {
+                    activity = nil
+                }
+            }
+        }
+
+        updateTask = nil
+        if pendingState != nil {
+            scheduleUpdate()
+        } else {
+            finishBackgroundTask()
         }
     }
 
     func end() {
+        pendingState = nil
+        lastSubmittedState = nil
+        updateTask?.cancel()
+        updateTask = nil
+        finishBackgroundTask()
+
         guard let activity else { return }
         self.activity = nil
 
         Task {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
+    }
+
+    private func finishBackgroundTask() {
+        guard backgroundTask != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(backgroundTask)
+        backgroundTask = .invalid
     }
 }

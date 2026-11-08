@@ -111,6 +111,34 @@
 - Pull request `#1` passed the pull-request verification run and was merged into `main`.
 - Remaining: add the AltStore source, put “远眺” into My Apps, verify notification permission, and run the physical foreground/background/lock tests.
 
+### Rest flow and Live Activity revision
+
+- Bumped the app to version 1.2.2 (build 5).
+- At work deadline, the 20-second break now starts immediately.
+- The foreground card lasts five seconds and allows keeping 20 seconds or extending to one minute.
+- The background notification no longer opens the app when selecting “休息 1 分钟”.
+- The selected break-completion sound is played directly by the app; the notification itself is silent to prevent duplicate playback.
+- Live Activity is refreshed when the app becomes active after unlock, addressing the stale “解锁后继续” display.
+- Added a widget extension and verified that the built IPA contains
+  `PlugIns/EyeCare2020LiveActivity.appex`.
+- GitHub iOS verification passed for commit `e5efa03`; release workflow
+  `42388658734` published release `altstore-42388658734`.
+- The published IPA is 457,629 bytes with SHA-256
+  `0ff497eab5c9bf23b6c6284256adef485ec8f4056c470536c5365f8fac6c67fb`.
+- Version 1.2.2 was installed successfully on the original iPhone.
+
+### Second iPhone preparation
+
+- A second iPhone (“安琪的 iPhone”, iOS 26.2.1) was connected.
+- The computer was trusted and Developer Mode was made visible with the AMFI
+  command, then manually enabled and confirmed on-device.
+- Sideloadly's local Fake2 Anisette marker was found at
+  `C:\Users\64580\AppData\Local\cache\sideloadly\native-anis-Fake2.crashed`
+  and moved to `native-anis-Fake2.crashed.bak`.
+- Installation on the second iPhone was postponed at the user's request.
+- Next time: install `EyeCare2020.ipa`, trust the developer profile if prompted,
+  and run the physical notification, sound, lock, and Live Activity checks.
+
 ## Error Log
 
 | Timestamp | Error | Attempt | Resolution |
